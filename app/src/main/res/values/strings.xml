@@ -1,0 +1,24 @@
+<resources>
+    <string name="app_name">BlueFlyVario</string>
+    <string name="title_devices">Devices</string>
+    <string name="title_dashboard">Dashboard</string>
+    <string name="title_parameters">Parameters</string>
+    <string name="about">About</string>
+    <string name="altitude">Altitude:</string>
+    <string name="altitude_value">%1$sm</string>
+    <string name="hwversion">HwVersion:</string>
+    <string name="battery">Battery:</string>
+    <string name="battery_value">%1$s%%(%2$sV)</string>
+    <string name="temperature">Temperature:</string>
+    <string name="temperature_value">%1$s°C</string>
+
+    <string name="about_app">BlueFlyVario Android app
+        \nAuthor: Deni Bakovic
+    </string>
+
+    <string name="raw_data_stream"><u>Data Stream:</u></string>
+    <string name="sendCommand">Send Command</string>
+    <string name="autoConnect">Autoconnect</string>
+    <string name="dryRun">Dry run</string>
+
+</resources>

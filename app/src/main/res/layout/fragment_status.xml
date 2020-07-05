@@ -1,0 +1,101 @@
+<TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.bfv.BFVAndroid.fragments.dashboard.StatusFragment">
+
+    <TableRow
+        android:id="@+id/rowHwVersion"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:weightSum="10">
+
+        <TextView
+            android:id="@+id/hwVersionLabel"
+            android:layout_width="@dimen/status_table_first_column"
+            android:layout_height="wrap_content"
+            android:labelFor="@id/hwVersionText"
+            android:text="@string/hwversion"
+            android:textSize="18sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/hwVersionText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/colorPrimary"
+            android:textSize="18sp"
+            android:textStyle="bold" />
+
+    </TableRow>
+
+    <TableRow
+        android:id="@+id/rowBattery"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <TextView
+            android:id="@+id/batteryLabel"
+            android:layout_width="@dimen/status_table_first_column"
+            android:layout_height="wrap_content"
+            android:labelFor="@id/batteryText"
+            android:text="@string/battery"
+            android:textSize="18sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/batteryText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/colorPrimary"
+            android:textSize="18sp"
+            android:textStyle="bold" />
+    </TableRow>
+
+    <TableRow
+        android:id="@+id/rowTemperature"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <TextView
+            android:id="@+id/temperatureLabel"
+            android:layout_width="@dimen/status_table_first_column"
+            android:layout_height="wrap_content"
+            android:labelFor="@id/temperatureText"
+            android:text="@string/temperature"
+            android:textSize="18sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/temperatureText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/colorPrimary"
+            android:textSize="18sp"
+            android:textStyle="bold" />
+    </TableRow>
+
+    <TableRow
+        android:id="@+id/rowAltitude"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <TextView
+            android:id="@+id/altitudeLabel"
+            android:layout_width="@dimen/status_table_first_column"
+            android:layout_height="wrap_content"
+            android:labelFor="@id/altitudeText"
+            android:text="@string/altitude"
+            android:textSize="18sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/altitudeText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/colorPrimary"
+            android:textSize="18sp"
+            android:textStyle="bold" />
+    </TableRow>
+
+</TableLayout>
