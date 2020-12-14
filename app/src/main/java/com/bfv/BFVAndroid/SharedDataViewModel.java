@@ -1,12 +1,10 @@
 package com.bfv.BFVAndroid;
 
-import android.bluetooth.BluetoothDevice;
-
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
-import com.bfv.BFVAndroid.bluetooth.BluetoothService;
+import com.bfv.BFVAndroid.bluetooth.BluetoothProvider;
 
 import java.util.ArrayList;
 
@@ -14,9 +12,6 @@ import BFVlib.BFV;
 
 public class SharedDataViewModel extends ViewModel{
     private final MutableLiveData<Integer> connectionState;
-    private final MutableLiveData<Boolean> isConnected;
-    private final MutableLiveData<BluetoothDevice> connectedDevice;
-    private final MutableLiveData<BluetoothDevice> lastConnectedDevice;
 
     private final MutableLiveData<Double> deviceBattery;
     private final MutableLiveData<String> deviceHwVersion;
@@ -27,6 +22,8 @@ public class SharedDataViewModel extends ViewModel{
     private final ArrayList<String> rawData;
 
     private final MutableLiveData<Boolean> dryRun;
+    private final MutableLiveData<Boolean> autoconnect;
+    private final MutableLiveData<String> autoconnectDeviceMac;
 
     public BFV bfv;
 
@@ -36,20 +33,36 @@ public class SharedDataViewModel extends ViewModel{
         rawDataObservable = new MutableLiveData<>();
         rawData = new ArrayList<>();
 
-        isConnected = new MutableLiveData<>(Boolean.FALSE);
-        connectedDevice = new MutableLiveData<>(null);
-        lastConnectedDevice = new MutableLiveData<>(null);
-
         deviceAltitude = new MutableLiveData<>(Double.NaN);
         deviceBattery = new MutableLiveData<>(Double.NaN);
         deviceHwVersion = new MutableLiveData<>("");
         deviceTemp = new MutableLiveData<>(Double.NaN);
 
-        connectionState = new MutableLiveData<>(BluetoothService.STATE_DISCONNECTED);
+        autoconnect = new MutableLiveData<>(false);
+        autoconnectDeviceMac = new MutableLiveData<>(null);
+
+        connectionState = new MutableLiveData<>(BluetoothProvider.STATE_DISCONNECTED);
 
         dryRun = new MutableLiveData<>(Boolean.TRUE);
 
         bfv = new BFV();
+    }
+
+
+    /**
+     * Autoconnect
+     */
+    public void setAutoconnect(boolean autoconnect, String mac) {
+        this.autoconnect.postValue(autoconnect);
+        this.autoconnectDeviceMac.postValue(mac);
+    }
+
+    public MutableLiveData<Boolean> getAutoconnect() {
+        return this.autoconnect;
+    }
+
+    public MutableLiveData<String> getAutoconnectDeviceMac() {
+        return this.autoconnectDeviceMac;
     }
 
 
@@ -67,32 +80,6 @@ public class SharedDataViewModel extends ViewModel{
 
     public MutableLiveData<String> getLastRawData() {
         return this.rawDataObservable;
-    }
-
-
-
-    /**
-     * Connected device
-     */
-    public MutableLiveData<Boolean> getIsConnected() {
-        return this.isConnected;
-    }
-
-    public void setIsConnected(Boolean isConnected) {
-        this.isConnected.postValue(isConnected);
-    }
-
-    public MutableLiveData<BluetoothDevice> getConnectedDevice() {
-        return this.connectedDevice;
-    }
-
-    public void setConnectedDevice(BluetoothDevice connectedDevice) {
-        this.lastConnectedDevice.postValue(this.connectedDevice.getValue());
-        this.connectedDevice.postValue(connectedDevice);
-    }
-
-    public MutableLiveData<BluetoothDevice> getLastConnectedDevice() {
-        return this.lastConnectedDevice;
     }
 
 

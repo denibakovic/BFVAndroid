@@ -1,12 +1,9 @@
 package com.bfv.BFVAndroid;
 
 import android.bluetooth.BluetoothDevice;
-import android.content.ComponentName;
 import android.content.Context;
-import android.content.Intent;
-import android.content.ServiceConnection;
+import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.os.IBinder;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -24,7 +21,8 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bfv.BFVAndroid.bluetooth.BluetoothController;
-import com.bfv.BFVAndroid.bluetooth.BluetoothService;
+import com.bfv.BFVAndroid.bluetooth.BluetoothProvider;
+import com.bfv.BFVAndroid.bluetooth.BluetoothAplication;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import java.util.TreeMap;
@@ -34,14 +32,16 @@ import BFVlib.Command;
 
 /**
  * Main and only activity in this app
- * Binds to BluetoothService and creates sharedData for Fragments and BluetoothSerialThread to use
+ * Binds to BluetoothProvider and creates sharedData for Fragments and BluetoothSerialThread to use
  */
 public class MainActivity extends AppCompatActivity implements BluetoothController, SendCommandRecyclerAdapter.ItemClickListener {
 
-    private BluetoothService bluetoothService;
+    private BluetoothProvider bluetoothProvider;
     private SharedDataViewModel sharedData;
     private MenuItem sendCommand;
+    private MenuItem autoconnect;
     private TreeMap<String, Command> commands;
+    private SharedPreferences sharedPreferences;
 
 
     @Override
@@ -52,52 +52,54 @@ public class MainActivity extends AppCompatActivity implements BluetoothControll
         // Re-created activities receive the same SharedDataViewModel instance created by the first activity.
         sharedData = new ViewModelProvider(this).get(SharedDataViewModel.class);
 
+        BluetoothAplication bluetoothAplication = (BluetoothAplication) getApplication();
+        bluetoothProvider = bluetoothAplication.getBluetoothProvider();
+        bluetoothProvider.setSharedData(sharedData);
+
         setContentView(R.layout.activity_main);
         BottomNavigationView navView = findViewById(R.id.nav_view);
 
         NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment);
         NavigationUI.setupWithNavController(navView, navController);
-    }
 
+        sharedPreferences = getSharedPreferences("com.bfv.BFVAndroid", Context.MODE_PRIVATE);
 
-    @Override
-    protected void onPause() {
-        // Unregister since the activity is paused.
-        unbindService(connection);
-
-        super.onPause();
+        // TODO: add swipe support
     }
 
 
     @Override
     protected void onResume() {
-        // Bind to LocalService
-        Intent intent = new Intent(this, BluetoothService.class);
-        bindService(intent, connection, Context.BIND_AUTO_CREATE);
-
+        if(sharedPreferences.getBoolean("autoconnect", false)) {
+            String mac = sharedPreferences.getString("autoconnectDevice", "");
+            if( ! mac.equals("")) {
+                sharedData.setAutoconnect(true, mac);
+            }
+        }
+        // TODO: autoconnect
         super.onResume();
     }
 
 
-    /**
-     * Inflate menu
-     */
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.settings_menu, menu);
         sendCommand = menu.findItem(R.id.settings_sendCommand);
+        autoconnect = menu.findItem(R.id.settings_autoconnect);
         return true;
     }
 
+
     @Override
     public boolean onMenuOpened(int featureId, Menu menu) {
-        sendCommand.setEnabled(sharedData.getIsConnected().getValue());
+        sendCommand.setEnabled(getState() == BluetoothProvider.STATE_CONNECTED);
+        autoconnect.setChecked(sharedData.getAutoconnect().getValue());
+        autoconnect.setEnabled(getState() == BluetoothProvider.STATE_CONNECTED);
+
         return super.onMenuOpened(featureId, menu);
     }
 
-    /**
-     * Add menu options
-     */
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle item selection
@@ -116,12 +118,14 @@ public class MainActivity extends AppCompatActivity implements BluetoothControll
             case R.id.settings_autoconnect:
                 if(item.isChecked()) {
                     // "Autoconnect OFF"
-                    Toast.makeText(this, "Not implemented", Toast.LENGTH_SHORT).show();
-                    item.setChecked(false);
+                    setAutoconnectState(false, "", item);
                 } else {
                     // "Autoconnect ON"
-                    Toast.makeText(this, "Not implemented", Toast.LENGTH_SHORT).show();
-                    item.setChecked(true);
+                    BluetoothDevice device = getConnectedDevice();
+                    if(device != null) {
+                        String mac = device.getAddress();
+                        setAutoconnectState(true, mac, item);
+                    }
                     // TODO: connect to last used device if not connected
                 }
                 return true;
@@ -160,7 +164,7 @@ public class MainActivity extends AppCompatActivity implements BluetoothControll
                         }
                         else {
                             if( ! sharedData.getDryRun().getValue()) {
-                                if (bluetoothService.write(command.serializeCommand(editedValue))) {
+                                if (bluetoothProvider.write(command.serializeCommand(editedValue))) {
                                     Toast.makeText(this, "Sent " + commandName + " with value " + editedValue, Toast.LENGTH_SHORT).show();
                                 }
                                 else {
@@ -173,11 +177,10 @@ public class MainActivity extends AppCompatActivity implements BluetoothControll
                             }
                         }
                     });
-
             dialogBuilder.create().show();
         } else {
             if( ! sharedData.getDryRun().getValue()) {
-                if (bluetoothService.write(command.serializeCommand())) {
+                if (bluetoothProvider.write(command.serializeCommand())) {
                     Toast.makeText(this, "Sent " + commandName, Toast.LENGTH_SHORT).show();
                 } else {
                     Toast.makeText(this, "Error sending " + commandName, Toast.LENGTH_LONG).show();
@@ -191,47 +194,42 @@ public class MainActivity extends AppCompatActivity implements BluetoothControll
     }
 
 
-    /**
-     * Defines callbacks for service binding, passed to bindService()
-     */
-    private final ServiceConnection connection = new ServiceConnection() {
-        @Override
-        public void onServiceConnected(ComponentName className, IBinder service) {
-            // We've bound to LocalService, cast the IBinder and get LocalService instance
-            BluetoothService.LocalBinder binder = (BluetoothService.LocalBinder) service;
-            bluetoothService = binder.getService();
-            bluetoothService.setSharedData(sharedData);
-        }
-
-        @Override
-        public void onServiceDisconnected(ComponentName arg0) {
-        }
-    };
-
-
-    /**
-     * Connect to Bluetooth device
-     */
+    @Override
     public void connectBtDevice(BluetoothDevice bd) {
-        bluetoothService.connect(bd);
+        bluetoothProvider.connect(bd);
     }
 
-
-    /**
-     * Disconnect from Bluetooth device
-     */
+    @Override
     public void disconnectBtDevice() {
-        bluetoothService.disconnect();
+        bluetoothProvider.disconnect();
+    }
+
+    @Override
+    public boolean writeToBT(String data) {
+        return bluetoothProvider.write(data);
+    }
+
+    @Override
+    public int getState() {
+        return bluetoothProvider.getState();
+    }
+
+    @Override
+    public BluetoothDevice getConnectedDevice() {
+        return bluetoothProvider.getConnectedDevice();
+    }
+
+    @Override
+    public BluetoothDevice getPreviousConnectedDevice() {
+        return bluetoothProvider.getPreviousConnectedDevice();
     }
 
 
-    /**
-     * Write data to Bluetooth device via BluetoothService -> ConnectedThread
-     * @param data data to write
-     * @return true if successful, false otherwise
-     */
-    public boolean writeToBT(String data) {
-        return bluetoothService.write(data);
+    private void setAutoconnectState(boolean b, String s, MenuItem item) {
+        sharedData.setAutoconnect(b, s);
+        sharedPreferences.edit().putBoolean("autoconnect", b);
+        sharedPreferences.edit().putString("autoconnectDevice", s);
+        item.setChecked(b);
     }
 
 

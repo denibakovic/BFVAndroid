@@ -1,12 +1,8 @@
 package com.bfv.BFVAndroid.bluetooth;
 
-import android.app.Service;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothSocket;
-import android.content.Intent;
-import android.os.Binder;
-import android.os.IBinder;
 import android.util.Log;
 
 import com.bfv.BFVAndroid.SharedDataViewModel;
@@ -21,11 +17,14 @@ import java.util.UUID;
 
 /**
  * Class to handle BT connection
+ * FIXME: if user clicks disconnect/connect before the device closes socket on its side we get new
+ *  socket from the device but no output on that socket
+ *  WORKAROUNDS:
+ *      1. Reuse sockets?
+ *      2. Wait for xy seconds before actually trying to connect to the same device
  */
-public class BluetoothService extends Service {
-    private static final String TAG = "BluetoothService";
-
-    private final IBinder binder;
+public class BluetoothProvider {
+    private static final String TAG = "BluetoothProvider";
 
     // "random" unique identifier
     private static final UUID BT_MODULE_UUID = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB");
@@ -35,8 +34,10 @@ public class BluetoothService extends Service {
     private final BluetoothAdapter mBluetoothAdapter;
     private ConnectThread mConnectThread;
     private ConnectedThread mConnectedThread;
-    private int mState;
-    private int mNewState;
+    private BluetoothDevice connectedDevice;
+    private BluetoothDevice previousConnectedDevice;
+    private volatile int mState;
+    private volatile int mNewState;
 
     private SharedDataViewModel sharedData;
 
@@ -54,11 +55,12 @@ public class BluetoothService extends Service {
      * connections with other devices. It has a thread for connecting with a device
      * and a thread for performing data transmissions when connected.
      */
-    public BluetoothService() {
-        binder = new LocalBinder();
+    public BluetoothProvider() {
         mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
         mState = STATE_DISCONNECTED;
         mNewState = mState;
+        connectedDevice = null;
+        previousConnectedDevice = null;
     }
 
 
@@ -68,10 +70,17 @@ public class BluetoothService extends Service {
      * @param device The BluetoothDevice to connect
      */
     public synchronized void connect(BluetoothDevice device) {
-        Log.d(TAG, "connect to: " + device);
+        Log.d(TAG, "connect() to: " + device);
 
-        // Cancel any thread attempting to make a connection
         if (mState == STATE_CONNECTING) {
+            // If we are geting request to connect to the same device that we are
+            //  already connecting to - do nothing
+            if(mConnectThread.getDevice().getAddress().equals(device.getAddress())) {
+                Log.d(TAG, "connect() already connecting to: " + device);
+                return;
+            }
+
+            // Cancel any thread attempting to make a connection
             if (mConnectThread != null) {
                 mConnectThread.cancel();
                 mConnectThread = null;
@@ -80,6 +89,13 @@ public class BluetoothService extends Service {
 
         // Cancel any thread currently running a connection
         if (mConnectedThread != null) {
+            // If we are geting request to connect to the same device that we are
+            //  already connected to - do nothing
+            if(getConnectedDevice().getAddress().equals(device.getAddress())) {
+                Log.d(TAG, "connect() already connected to: " + device);
+                return;
+            }
+
             mConnectedThread.cancel();
             mConnectedThread = null;
         }
@@ -97,23 +113,38 @@ public class BluetoothService extends Service {
      * Disconnect from device
      */
     public synchronized void disconnect() {
-        Log.d(TAG, "disconnect");
+        Log.d(TAG, "disconnect()");
 
         // Cancel any thread attempting to make a connection
         if (mState == STATE_CONNECTING) {
             if (mConnectThread != null) {
                 mConnectThread.cancel();
+                mConnectThread.interrupt();
                 mConnectThread = null;
+
             }
         }
 
         // Cancel any thread currently running a connection
         if (mConnectedThread != null) {
             mConnectedThread.cancel();
+            mConnectedThread.interrupt();
             mConnectedThread = null;
         }
 
-        noConnection();
+        mState = STATE_DISCONNECTED;
+
+        // NOTE: uncomment to hide after disconnect
+        //sharedData.bfv.resetAllValues();
+        //sharedData.resetDeviceData();
+
+        if(connectedDevice != null) {
+            previousConnectedDevice = connectedDevice;
+        }
+        connectedDevice = null;
+
+        // Update ConnectionStatus
+        updateConnectionStatusInfo();
     }
 
 
@@ -142,6 +173,21 @@ public class BluetoothService extends Service {
     }
 
 
+    public int getState() {
+        return mState;
+    }
+
+
+    public BluetoothDevice getConnectedDevice() {
+        return connectedDevice;
+    }
+
+
+    public BluetoothDevice getPreviousConnectedDevice() {
+        return previousConnectedDevice;
+    }
+
+
     /**
      * Update ConnectionStatus according to the current state of the chat connection
      */
@@ -162,7 +208,7 @@ public class BluetoothService extends Service {
      */
     private synchronized void connected(BluetoothSocket socket, BluetoothDevice
             device) {
-        Log.d(TAG, "connected");
+        Log.d(TAG, "connected() to socket: " + socket + " device: " + device);
 
         // Cancel the thread that completed the connection
         if (mConnectThread != null) {
@@ -180,28 +226,7 @@ public class BluetoothService extends Service {
         mConnectedThread = new ConnectedThread(socket);
         mConnectedThread.start();
 
-        // Set sharedData connection info
-        sharedData.setIsConnected(true);
-        sharedData.setConnectedDevice(device);
-
-        // Update ConnectionStatus
-        updateConnectionStatusInfo();
-    }
-
-
-    /**
-     * Indicate that the connection attempt failed and notify the UI Activity.
-     */
-    private void noConnection() {
-        mState = STATE_DISCONNECTED;
-        sharedData.setIsConnected(false);
-        sharedData.setConnectedDevice(null);
-
-        // NOTE: uncomment to hide after disconnect
-        //sharedData.bfv.resetAllValues();
-        //sharedData.resetDeviceData();
-
-        Log.i(TAG, "disconnected");
+        connectedDevice = device;
 
         // Update ConnectionStatus
         updateConnectionStatusInfo();
@@ -226,14 +251,14 @@ public class BluetoothService extends Service {
                 tmp = device.createInsecureRfcommSocketToServiceRecord(
                         BT_MODULE_UUID);
             } catch (IOException e) {
-                Log.e(TAG, "create() failed", e);
+                Log.e(TAG, "createInsecureRfcommSocketToServiceRecord() failed", e);
             }
             mmSocket = tmp;
             mState = STATE_CONNECTING;
         }
 
         public void run() {
-            Log.i(TAG, "BEGIN mConnectThread");
+            Log.i(TAG, "run() ConnectThread");
             setName("ConnectThread");
 
             // Always cancel discovery because it will slow down a connection
@@ -251,12 +276,12 @@ public class BluetoothService extends Service {
                 } catch (IOException e2) {
                     Log.e(TAG, "unable to close() socket during connection failure", e2);
                 }
-                noConnection();
+                disconnect();
                 return;
             }
 
             // Reset the ConnectThread because we're done
-            synchronized (BluetoothService.this) {
+            synchronized (BluetoothProvider.this) {
                 mConnectThread = null;
             }
 
@@ -271,6 +296,10 @@ public class BluetoothService extends Service {
                 Log.e(TAG, "close() of connect socket failed", e);
             }
         }
+
+        public BluetoothDevice getDevice() {
+            return mmDevice;
+        }
     }
 
 
@@ -279,9 +308,9 @@ public class BluetoothService extends Service {
      * It handles all incoming and outgoing transmissions.
      */
     private class ConnectedThread extends Thread {
-        private final BluetoothSocket mmSocket;
-        private final BufferedReader mmInStream;
-        private final OutputStream mmOutStream;
+        private BluetoothSocket mmSocket;
+        private BufferedReader mmInStream;
+        private OutputStream mmOutStream;
 
         public ConnectedThread(BluetoothSocket socket) {
             Log.d(TAG, "create ConnectedThread");
@@ -294,7 +323,8 @@ public class BluetoothService extends Service {
                 tmpIn = socket.getInputStream();
                 tmpOut = socket.getOutputStream();
             } catch (IOException e) {
-                Log.e(TAG, "temp sockets not created", e);
+                Log.e(TAG, "tmpIn/tmpOut sockets not created", e);
+                disconnect();
             }
 
             mmInStream = new BufferedReader(new InputStreamReader(tmpIn));
@@ -303,7 +333,8 @@ public class BluetoothService extends Service {
         }
 
         public void run() {
-            Log.i(TAG, "BEGIN mConnectedThread");
+            Log.i(TAG, "run() ConnectedThread");
+            setName("ConnectedThread");
 
             // Keep reading from InputStream while connected
             boolean sendGetSettings = true;
@@ -349,8 +380,8 @@ public class BluetoothService extends Service {
                         sharedData.setDeviceAltitude(sharedData.bfv.getAltitude());
                     }
                 } catch (IOException e) {
-                    Log.i(TAG, "IOException in mConnectedThread");
-                    noConnection();
+                    Log.i(TAG, "IOException in mConnectedThread.run()");
+                    disconnect();
                     break;
                 }
             }
@@ -380,27 +411,25 @@ public class BluetoothService extends Service {
             } catch (IOException e) {
                 Log.e(TAG, "close() of connect socket failed", e);
             }
+            mmSocket = null;
+
+            if (mmInStream != null) {
+                try {
+                    mmInStream.close();}
+                catch (Exception e) {
+                    Log.e(TAG, "close() of input stream failed", e);
+                }
+                mmInStream = null;
+            }
+
+            if (mmOutStream != null) {
+                try {
+                    mmOutStream.close();}
+                catch (Exception e) {
+                    Log.e(TAG, "close() of output stream failed", e);
+                }
+                mmOutStream = null;
+            }
         }
-    }
-
-
-    /**
-     * Class used for the client Binder.  Because we know this service always
-     * runs in the same process as its clients, we don't need to deal with IPC.
-     */
-    public class LocalBinder extends Binder {
-        public BluetoothService getService() {
-            // Return this instance of BluetoothService so clients can call public methods
-            return BluetoothService.this;
-        }
-    }
-
-
-    /**
-     * Provide binder to MainActivity
-     */
-    @Override
-    public IBinder onBind(Intent intent) {
-        return binder;
     }
 }

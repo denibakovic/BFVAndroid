@@ -6,4 +6,7 @@ public interface BluetoothController {
     void connectBtDevice(BluetoothDevice bd);
     void disconnectBtDevice();
     boolean writeToBT(String data);
+    int getState();
+    BluetoothDevice getConnectedDevice();
+    BluetoothDevice getPreviousConnectedDevice();
 }

@@ -26,6 +26,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.bfv.BFVAndroid.R;
 import com.bfv.BFVAndroid.SharedDataViewModel;
 import com.bfv.BFVAndroid.bluetooth.BluetoothController;
+import com.bfv.BFVAndroid.bluetooth.BluetoothProvider;
 
 import java.util.Arrays;
 import java.util.Map;
@@ -58,7 +59,7 @@ public class ParametersFragment extends Fragment implements ParametersRecyclerAd
         // Set up the RecyclerView layout manager
         parametersRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
 
-        parametersRecyclerAdapter = new ParametersRecyclerAdapter(sharedData, getContext(), parameters);
+        parametersRecyclerAdapter = new ParametersRecyclerAdapter(sharedData, getContext(), parameters, bluetoothController);
         parametersRecyclerAdapter.setClickListener(this);
         parametersRecyclerView.setAdapter(parametersRecyclerAdapter);
 
@@ -156,7 +157,7 @@ public class ParametersFragment extends Fragment implements ParametersRecyclerAd
 
 
     private void buildDialog(Command parameter, EditText editParameter, AlertDialog.Builder dialogBuilder, double minVal, double maxVal, double defaultValue, boolean isBoolType) {
-        if (sharedData.getIsConnected().getValue()) {
+        if (bluetoothController.getState() == BluetoothProvider.STATE_CONNECTED) {
             if(isBoolType) {
                 createDialogBoolean(parameter, dialogBuilder);
             } else {
@@ -253,7 +254,7 @@ public class ParametersFragment extends Fragment implements ParametersRecyclerAd
 
     @Override
     public void onAttach(@NonNull Context context) {
-        // We use bluetoothController to command BluetoothService via MainActivity that implements
+        // We use bluetoothController to command BluetoothProvider via MainActivity that implements
         // BluetoothController interface
         bluetoothController = (BluetoothController) context;
         super.onAttach(context);

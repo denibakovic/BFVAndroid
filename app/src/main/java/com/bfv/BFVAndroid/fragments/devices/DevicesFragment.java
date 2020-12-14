@@ -22,7 +22,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.bfv.BFVAndroid.bluetooth.BluetoothController;
 import com.bfv.BFVAndroid.R;
 import com.bfv.BFVAndroid.SharedDataViewModel;
-import com.bfv.BFVAndroid.bluetooth.BluetoothService;
+import com.bfv.BFVAndroid.bluetooth.BluetoothProvider;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.util.ArrayList;
@@ -31,7 +31,7 @@ import java.util.ArrayList;
 public class DevicesFragment extends Fragment implements DevicesRecyclerAdapter.ItemClickListener  {
     private SharedDataViewModel sharedData;
 
-    private TextView statusTextView;
+    private TextView stateTextView;
     private RecyclerView devicesRecyclerView;
     private DevicesRecyclerAdapter devicesRecyclerAdapter;
 
@@ -61,7 +61,7 @@ public class DevicesFragment extends Fragment implements DevicesRecyclerAdapter.
     public void onStart() {
         super.onStart();
         // Connect Views to rootView
-        statusTextView = rootView.findViewById(R.id.statusTextView);
+        stateTextView = rootView.findViewById(R.id.stateTextView);
         devicesRecyclerView = rootView.findViewById(R.id.devicesRecyclerView);
         FloatingActionButton openBluetoothSettings = rootView.findViewById(R.id.searchForDevices);
 
@@ -73,14 +73,14 @@ public class DevicesFragment extends Fragment implements DevicesRecyclerAdapter.
 
         // If we don't have bluetooth
         if (mBluetoothAdapter == null) {
-            sharedData.setConnectionState(BluetoothService.STATE_NO_BLUETOOTH_ADAPTER);
+            sharedData.setConnectionState(BluetoothProvider.STATE_NO_BLUETOOTH_ADAPTER);
         }
 
-        // We have bluetooth device
+        // We have bluetooth
         else {
             // Enable bluetooth if it wasn't already on
             if ( ! mBluetoothAdapter.isEnabled()) {
-                sharedData.setConnectionState(BluetoothService.STATE_BLUETOOTH_DISABLED);
+                sharedData.setConnectionState(BluetoothProvider.STATE_BLUETOOTH_DISABLED);
                 if ( ! askedForBluetooth) {
                     Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
                     startActivityForResult(enableBtIntent, 0);
@@ -119,7 +119,7 @@ public class DevicesFragment extends Fragment implements DevicesRecyclerAdapter.
 
         // Check if we have any devices
         if (pairedDevices.isEmpty()) {
-            sharedData.setConnectionState(BluetoothService.STATE_NO_PAIRED_DEVICES);
+            sharedData.setConnectionState(BluetoothProvider.STATE_NO_PAIRED_DEVICES);
             Toast.makeText(getContext(), "Please pair the device via your phone's Settings!", Toast.LENGTH_SHORT).show();
         } else {
             // Set adapter
@@ -127,15 +127,16 @@ public class DevicesFragment extends Fragment implements DevicesRecyclerAdapter.
             devicesRecyclerAdapter.setClickListener(this);
             devicesRecyclerView.setAdapter(devicesRecyclerAdapter);
 
-            sharedData.setConnectionState(BluetoothService.STATE_DISCONNECTED);
-
             // Set background color if connected
-            if (sharedData.getIsConnected().getValue()) {
-                BluetoothDevice bluetoothDevice = sharedData.getConnectedDevice().getValue();
+            if (bluetoothController.getState() == BluetoothProvider.STATE_CONNECTED) {
+                BluetoothDevice bluetoothDevice = bluetoothController.getConnectedDevice();
                 if (pairedDevices.contains(bluetoothDevice)) {
                     devicesRecyclerView.post(changeDeviceItemBackgroundColor(bluetoothDevice, true));
-                    sharedData.setConnectionState(BluetoothService.STATE_CONNECTED);
+                    stateTextView.setText("Connected to " + bluetoothDevice.getName());
                 }
+            }
+            else {
+                stateTextView.setText("Disconnected!");
             }
         }
     }
@@ -171,11 +172,11 @@ public class DevicesFragment extends Fragment implements DevicesRecyclerAdapter.
      */
     @Override
     public void onItemClick(View view, int position) {
-        BluetoothDevice connectedDevice = sharedData.getConnectedDevice().getValue();
+        BluetoothDevice connectedDevice = bluetoothController.getConnectedDevice();
         BluetoothDevice deviceToConnectTo = devicesRecyclerAdapter.getItem(position);
 
         // If not connected user probably wants to connect
-        if (! sharedData.getIsConnected().getValue()) {
+        if (bluetoothController.getState() != BluetoothProvider.STATE_CONNECTED) {
             bluetoothController.connectBtDevice(deviceToConnectTo);
         }
         // If user clicks on already connected device -> disconnect
@@ -200,27 +201,27 @@ public class DevicesFragment extends Fragment implements DevicesRecyclerAdapter.
         @Override
         public void onChanged(@Nullable Integer i) {
             switch (i) {
-                case BluetoothService.STATE_BLUETOOTH_DISABLED:
-                    statusTextView.setText("Bluetooth disabled!");
+                case BluetoothProvider.STATE_BLUETOOTH_DISABLED:
+                    stateTextView.setText("Bluetooth disabled!");
                     break;
-                case BluetoothService.STATE_NO_BLUETOOTH_ADAPTER:
-                    statusTextView.setText("Phone doesn't have bluetooth!");
+                case BluetoothProvider.STATE_NO_BLUETOOTH_ADAPTER:
+                    stateTextView.setText("Phone doesn't have bluetooth!");
                     break;
-                case BluetoothService.STATE_DISCONNECTED:
-                    statusTextView.setText("Disconnected!");
-                    if(sharedData.getLastConnectedDevice().getValue() != null) {
-                        devicesRecyclerView.post(changeDeviceItemBackgroundColor(sharedData.getLastConnectedDevice().getValue(), false));
+                case BluetoothProvider.STATE_DISCONNECTED:
+                    stateTextView.setText("Disconnected!");
+                    if(bluetoothController.getPreviousConnectedDevice() != null) {
+                        devicesRecyclerView.post(changeDeviceItemBackgroundColor(bluetoothController.getPreviousConnectedDevice(), false));
                     }
                     break;
-                case BluetoothService.STATE_CONNECTING:
-                    statusTextView.setText("Connecting ..");
+                case BluetoothProvider.STATE_CONNECTING:
+                    stateTextView.setText("Connecting ..");
                     break;
-                case BluetoothService.STATE_CONNECTED:
-                    statusTextView.setText("Connected to " + sharedData.getConnectedDevice().getValue().getName());
-                    devicesRecyclerView.post(changeDeviceItemBackgroundColor(sharedData.getConnectedDevice().getValue(), true));
+                case BluetoothProvider.STATE_CONNECTED:
+                    stateTextView.setText("Connected to " + bluetoothController.getConnectedDevice().getName());
+                    devicesRecyclerView.post(changeDeviceItemBackgroundColor(bluetoothController.getConnectedDevice(), true));
                     break;
-                case BluetoothService.STATE_NO_PAIRED_DEVICES:
-                    statusTextView.setText("No paired devices!");
+                case BluetoothProvider.STATE_NO_PAIRED_DEVICES:
+                    stateTextView.setText("No paired devices!");
                     break;
             }
         }
@@ -245,7 +246,7 @@ public class DevicesFragment extends Fragment implements DevicesRecyclerAdapter.
 
     @Override
     public void onAttach(@NonNull Context context) {
-        // We use bluetoothController to command BluetoothService via MainActivity that implements
+        // We use bluetoothController to command BluetoothProvider via MainActivity that implements
         // BluetoothController interface
         bluetoothController = (BluetoothController) context;
         super.onAttach(context);

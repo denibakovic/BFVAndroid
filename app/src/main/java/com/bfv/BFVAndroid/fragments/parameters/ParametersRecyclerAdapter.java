@@ -12,6 +12,8 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.bfv.BFVAndroid.R;
 import com.bfv.BFVAndroid.SharedDataViewModel;
+import com.bfv.BFVAndroid.bluetooth.BluetoothController;
+import com.bfv.BFVAndroid.bluetooth.BluetoothProvider;
 
 import java.util.Map;
 
@@ -28,13 +30,16 @@ public class ParametersRecyclerAdapter extends RecyclerView.Adapter<ParametersRe
     private ItemClickListener mClickListener;
     private final SharedDataViewModel sharedData;
     private final Context mContext;
+    private final BluetoothController bluetoothController;
 
     // Command is passed into the constructor
-    ParametersRecyclerAdapter(SharedDataViewModel sharedData, Context context, Map<String, Command> parameters) {
+    ParametersRecyclerAdapter(SharedDataViewModel sharedData, Context context, Map<String,
+            Command> parameters, BluetoothController bluetoothController) {
         this.mInflater = LayoutInflater.from(context);
         this.mParameters = parameters;
         this.sharedData = sharedData;
         this.mContext = context;
+        this.bluetoothController = bluetoothController;
     }
 
     // stores and recycles views as they are scrolled off screen
@@ -88,7 +93,7 @@ public class ParametersRecyclerAdapter extends RecyclerView.Adapter<ParametersRe
             holder.parameterValue.setText("");
         }
 
-        if(sharedData.getIsConnected().getValue()) {
+        if(bluetoothController.getState() == BluetoothProvider.STATE_CONNECTED) {
             holder.parameterValue.setTextColor(ContextCompat.getColor(mContext, R.color.colorPrimary));
         } else {
             holder.parameterValue.setTextColor(ContextCompat.getColor(mContext, R.color.colorGrey));

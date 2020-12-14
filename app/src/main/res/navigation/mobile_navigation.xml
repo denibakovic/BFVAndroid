@@ -23,6 +23,9 @@
         <action
             android:id="@+id/action_navigation_dashboard_to_navigation_parameters"
             app:destination="@id/navigation_parameters" />
+        <action
+            android:id="@+id/action_navigation_dashboard_to_navigation_devices"
+            app:destination="@id/navigation_devices" />
     </fragment>
 
     <fragment

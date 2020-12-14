@@ -1,11 +1,13 @@
 package com.bfv.BFVAndroid.fragments.dashboard;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
@@ -14,7 +16,8 @@ import androidx.lifecycle.ViewModelProvider;
 
 import com.bfv.BFVAndroid.R;
 import com.bfv.BFVAndroid.SharedDataViewModel;
-import com.bfv.BFVAndroid.bluetooth.BluetoothService;
+import com.bfv.BFVAndroid.bluetooth.BluetoothController;
+import com.bfv.BFVAndroid.bluetooth.BluetoothProvider;
 
 
 public class StatusFragment extends Fragment {
@@ -24,6 +27,7 @@ public class StatusFragment extends Fragment {
     private TextView textViewAltitude;
     private TextView textViewHwversion;
     private TextView textViewTemperature;
+    private BluetoothController bluetoothController;
 
 
     @Override
@@ -48,7 +52,7 @@ public class StatusFragment extends Fragment {
         textViewHwversion = rootView.findViewById(R.id.hwVersionText);
         textViewTemperature = rootView.findViewById(R.id.temperatureText);
 
-        if(sharedData.getIsConnected().getValue()) {
+        if(bluetoothController.getState() == BluetoothProvider.STATE_CONNECTED) {
             setTextBackgroundColor(R.color.colorPrimary);
         }
         else {
@@ -85,7 +89,7 @@ public class StatusFragment extends Fragment {
         @Override
         public void onChanged(@Nullable Integer i) {
             switch (i) {
-                case BluetoothService.STATE_CONNECTED:
+                case BluetoothProvider.STATE_CONNECTED:
                     rootView.post(() ->  {
                         setTextBackgroundColor(R.color.colorPrimary);
                     });
@@ -148,4 +152,13 @@ public class StatusFragment extends Fragment {
             }
         }
     };
+
+
+    @Override
+    public void onAttach(@NonNull Context context) {
+        // We use bluetoothController to command BluetoothProvider via MainActivity that implements
+        // BluetoothController interface
+        bluetoothController = (BluetoothController) context;
+        super.onAttach(context);
+    }
 }
