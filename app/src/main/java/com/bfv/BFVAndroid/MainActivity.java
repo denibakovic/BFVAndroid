@@ -1,5 +1,6 @@
 package com.bfv.BFVAndroid;
 
+import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -43,7 +44,13 @@ public class MainActivity extends AppCompatActivity implements BluetoothControll
     private TreeMap<String, Command> commands;
     private SharedPreferences sharedPreferences;
 
-
+    // TODO: do not autoconnect on rotate if user disconnected previously
+    // TODO: add swipe support
+    // TODO: add parameters save / reload / share
+    // TODO: fix viewGraph and make it preserve state until disconnect
+    // TODO: add simple kalman vario
+    // TODO: mark commands that are made for higher HW version different color
+    // TODO: add rawData save / share
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -63,20 +70,18 @@ public class MainActivity extends AppCompatActivity implements BluetoothControll
         NavigationUI.setupWithNavController(navView, navController);
 
         sharedPreferences = getSharedPreferences("com.bfv.BFVAndroid", Context.MODE_PRIVATE);
-
-        // TODO: add swipe support
     }
 
 
     @Override
     protected void onResume() {
-        if(sharedPreferences.getBoolean("autoconnect", false)) {
+        if(sharedPreferences.getBoolean("autoconnect", false)
+                && bluetoothProvider.getState() == BluetoothProvider.STATE_DISCONNECTED) {
             String mac = sharedPreferences.getString("autoconnectDevice", "");
             if( ! mac.equals("")) {
-                sharedData.setAutoconnect(true, mac);
+                connectBtDevice(BluetoothAdapter.getDefaultAdapter().getRemoteDevice(mac));
             }
         }
-        // TODO: autoconnect
         super.onResume();
     }
 
@@ -93,7 +98,7 @@ public class MainActivity extends AppCompatActivity implements BluetoothControll
     @Override
     public boolean onMenuOpened(int featureId, Menu menu) {
         sendCommand.setEnabled(getState() == BluetoothProvider.STATE_CONNECTED);
-        autoconnect.setChecked(sharedData.getAutoconnect().getValue());
+        autoconnect.setChecked(sharedPreferences.getBoolean("autoconnect", false));
         autoconnect.setEnabled(getState() == BluetoothProvider.STATE_CONNECTED);
 
         return super.onMenuOpened(featureId, menu);
@@ -123,13 +128,10 @@ public class MainActivity extends AppCompatActivity implements BluetoothControll
                     // "Autoconnect ON"
                     BluetoothDevice device = getConnectedDevice();
                     if(device != null) {
-                        String mac = device.getAddress();
-                        setAutoconnectState(true, mac, item);
+                        setAutoconnectState(true, device.getAddress(), item);
                     }
-                    // TODO: connect to last used device if not connected
                 }
                 return true;
-            // TODO: add log to file
             case R.id.settings_about:
                 showAboutDialog();
                 return true;
@@ -180,11 +182,24 @@ public class MainActivity extends AppCompatActivity implements BluetoothControll
             dialogBuilder.create().show();
         } else {
             if( ! sharedData.getDryRun().getValue()) {
-                if (bluetoothProvider.write(command.serializeCommand())) {
-                    Toast.makeText(this, "Sent " + commandName, Toast.LENGTH_SHORT).show();
-                } else {
-                    Toast.makeText(this, "Error sending " + commandName, Toast.LENGTH_LONG).show();
-                }
+                android.app.AlertDialog.Builder dialogBuilder = new android.app.AlertDialog.Builder(this)
+                        .setTitle("Send " + commandName + "?")
+                        .setNegativeButton("Cancel", (dialog, whichButton) -> {});
+
+                EditText editParameter = new EditText(this);
+                editParameter.setHint("Confirm sending command!");
+                editParameter.setEnabled(false);
+
+                dialogBuilder
+                        //.setView(editParameter)
+                        .setPositiveButton("Send", (dialog, whichButton) -> {
+                            if (bluetoothProvider.write(command.serializeCommand())) {
+                                Toast.makeText(this, "Sent " + commandName, Toast.LENGTH_SHORT).show();
+                            } else {
+                                Toast.makeText(this, "Error sending " + commandName, Toast.LENGTH_LONG).show();
+                            }
+                        });
+                dialogBuilder.create().show();
             }
             else {
                 Toast.makeText(this, "Dry Run is ON, no command sent!", Toast.LENGTH_LONG).show();
@@ -225,11 +240,10 @@ public class MainActivity extends AppCompatActivity implements BluetoothControll
     }
 
 
-    private void setAutoconnectState(boolean b, String s, MenuItem item) {
-        sharedData.setAutoconnect(b, s);
-        sharedPreferences.edit().putBoolean("autoconnect", b);
-        sharedPreferences.edit().putString("autoconnectDevice", s);
-        item.setChecked(b);
+    private void setAutoconnectState(boolean autoconnect, String mac, MenuItem item) {
+        sharedPreferences.edit().putBoolean("autoconnect", autoconnect).apply();
+        sharedPreferences.edit().putString("autoconnectDevice", mac).apply();
+        item.setChecked(autoconnect);
     }
 
 

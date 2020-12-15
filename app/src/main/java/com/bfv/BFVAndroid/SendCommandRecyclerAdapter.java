@@ -18,11 +18,13 @@ public class SendCommandRecyclerAdapter extends RecyclerView.Adapter<SendCommand
     private final LayoutInflater mInflater;
     private SendCommandRecyclerAdapter.ItemClickListener mClickListener;
 
+
     // Command is passed into the constructor
     SendCommandRecyclerAdapter(Context context, TreeMap<String, Command> commands) {
         this.mInflater = LayoutInflater.from(context);
         this.mCommands = commands;
     }
+
 
     // inflates the row layout from xml when needed
     @Override
@@ -31,6 +33,7 @@ public class SendCommandRecyclerAdapter extends RecyclerView.Adapter<SendCommand
 
         return new SendCommandRecyclerAdapter.ViewHolder(view);
     }
+
 
     // binds the data to the TextView in each row
     @Override
@@ -41,6 +44,7 @@ public class SendCommandRecyclerAdapter extends RecyclerView.Adapter<SendCommand
         holder.commandName.setText(commandName);
         holder.commandDescription.setText(command.getDescription());
     }
+
 
     // total number of rows
     @Override
@@ -65,16 +69,6 @@ public class SendCommandRecyclerAdapter extends RecyclerView.Adapter<SendCommand
         public void onClick(View view) {
             if (mClickListener != null) mClickListener.onSendCommandItemClick(view, getAdapterPosition());
         }
-    }
-
-
-    /**
-     * Convenient method for getting Command at click position
-     * @param position position of Command
-     * @return Command
-     */
-    public Command getItem(int position) {
-        return mCommands.get((String) mCommands.keySet().toArray()[position]);
     }
 
 
