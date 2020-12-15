@@ -17,7 +17,7 @@
         android:layout_marginEnd="4dp"
         android:layout_marginRight="4dp"
         android:layout_marginBottom="16dp"
-        android:layout_weight="30"></androidx.fragment.app.FragmentContainerView>
+        android:layout_weight="40" />
 
     <androidx.fragment.app.FragmentContainerView
         android:id="@+id/rawDataFragmentContainerView"
@@ -30,19 +30,6 @@
         android:layout_marginEnd="4dp"
         android:layout_marginRight="4dp"
         android:layout_marginBottom="16dp"
-        android:layout_weight="30"></androidx.fragment.app.FragmentContainerView>
-
-    <androidx.fragment.app.FragmentContainerView
-        android:id="@+id/varioGraphFragmentContainerView"
-        android:name="com.bfv.BFVAndroid.fragments.dashboard.VarioGraphFragment"
-        android:layout_width="0dp"
-        android:layout_height="match_parent"
-        android:layout_marginStart="4dp"
-        android:layout_marginLeft="4dp"
-        android:layout_marginTop="16dp"
-        android:layout_marginEnd="4dp"
-        android:layout_marginRight="4dp"
-        android:layout_weight="40"
-        tools:layout_marginBottom="16dp"></androidx.fragment.app.FragmentContainerView>
+        android:layout_weight="60" />
 
 </LinearLayout>

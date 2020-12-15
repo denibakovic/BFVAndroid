@@ -15,16 +15,17 @@ import android.widget.Toast;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
-import androidx.navigation.NavController;
-import androidx.navigation.Navigation;
-import androidx.navigation.ui.NavigationUI;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.viewpager.widget.ViewPager;
 
 import com.bfv.BFVAndroid.bluetooth.BluetoothController;
 import com.bfv.BFVAndroid.bluetooth.BluetoothProvider;
 import com.bfv.BFVAndroid.bluetooth.BluetoothAplication;
-import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.bfv.BFVAndroid.fragments.dashboard.DashboardFragment;
+import com.bfv.BFVAndroid.fragments.devices.DevicesFragment;
+import com.bfv.BFVAndroid.fragments.parameters.ParametersFragment;
+import com.google.android.material.tabs.TabLayout;
 
 import java.util.TreeMap;
 
@@ -44,13 +45,14 @@ public class MainActivity extends AppCompatActivity implements BluetoothControll
     private TreeMap<String, Command> commands;
     private SharedPreferences sharedPreferences;
 
+
+    // TODO: implement custom vario / vario graph
     // TODO: do not autoconnect on rotate if user disconnected previously
-    // TODO: add swipe support
     // TODO: add parameters save / reload / share
     // TODO: fix viewGraph and make it preserve state until disconnect
-    // TODO: add simple kalman vario
     // TODO: mark commands that are made for higher HW version different color
     // TODO: add rawData save / share
+    // MAYBE: add connection status(or icon) connected / disconnected to status bar
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -64,12 +66,33 @@ public class MainActivity extends AppCompatActivity implements BluetoothControll
         bluetoothProvider.setSharedData(sharedData);
 
         setContentView(R.layout.activity_main);
-        BottomNavigationView navView = findViewById(R.id.nav_view);
 
-        NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment);
-        NavigationUI.setupWithNavController(navView, navController);
+        // ViewPager setup
+        TabLayout tabLayout = findViewById(R.id.tab_layout);
+        ViewPager viewPager = findViewById(R.id.viewPager);
+        PagerAdapter pagerAdapter = new PagerAdapter(getSupportFragmentManager());
+
+        // Attaching fragments to adapter
+        pagerAdapter.addFragment(new DevicesFragment(),"Devices");
+        pagerAdapter.addFragment(new DashboardFragment(),"Dashboard");
+        pagerAdapter.addFragment(new ParametersFragment(),"Parameters");
+
+        viewPager.setAdapter(pagerAdapter);
+        tabLayout.setupWithViewPager(viewPager);
+
+        // Setting icons
+        tabLayout.getTabAt(0).setIcon(R.drawable.ic_devices_24);
+        tabLayout.getTabAt(1).setIcon(R.drawable.ic_dashboard_black_24dp);
+        tabLayout.getTabAt(2).setIcon(R.drawable.ic_parameters_24);
 
         sharedPreferences = getSharedPreferences("com.bfv.BFVAndroid", Context.MODE_PRIVATE);
+
+        if(sharedPreferences.getBoolean("autoconnect", false)) {
+            viewPager.setCurrentItem(1);
+        }
+        else {
+            viewPager.setCurrentItem(0);
+        }
     }
 
 

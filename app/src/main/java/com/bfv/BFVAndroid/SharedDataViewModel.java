@@ -22,8 +22,6 @@ public class SharedDataViewModel extends ViewModel{
     private final ArrayList<String> rawData;
 
     private final MutableLiveData<Boolean> dryRun;
-//    private final MutableLiveData<Boolean> autoconnect;
-//    private final MutableLiveData<String> autoconnectDeviceMac;
 
     public BFV bfv;
 
@@ -38,32 +36,11 @@ public class SharedDataViewModel extends ViewModel{
         deviceHwVersion = new MutableLiveData<>("");
         deviceTemp = new MutableLiveData<>(Double.NaN);
 
-//        autoconnect = new MutableLiveData<>(false);
-//        autoconnectDeviceMac = new MutableLiveData<>(null);
-
         connectionState = new MutableLiveData<>(BluetoothProvider.STATE_DISCONNECTED);
-
         dryRun = new MutableLiveData<>(Boolean.TRUE);
 
         bfv = new BFV();
     }
-
-
-//    /**
-//     * Autoconnect
-//     */
-//    public void setAutoconnect(boolean autoconnect, String mac) {
-//        this.autoconnect.postValue(autoconnect);
-//        this.autoconnectDeviceMac.postValue(mac);
-//    }
-
-//    public MutableLiveData<Boolean> getAutoconnect() {
-//        return this.autoconnect;
-//    }
-//
-//    public MutableLiveData<String> getAutoconnectDeviceMac() {
-//        return this.autoconnectDeviceMac;
-//    }
 
 
     /**

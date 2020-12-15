@@ -52,6 +52,7 @@ public class RawDataFragment extends Fragment {
         return rootView;
     }
 
+
     /**
      * Observer for sharedData.rawData
      */

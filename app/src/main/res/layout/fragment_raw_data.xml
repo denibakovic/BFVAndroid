@@ -15,8 +15,8 @@
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rawDataRecyclerView"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:longClickable="true"
+        android:layout_height="0dp"
+        android:layout_weight="1"
         tools:listitem="@layout/raw_data_recycler_view_row" />
 
 </LinearLayout>

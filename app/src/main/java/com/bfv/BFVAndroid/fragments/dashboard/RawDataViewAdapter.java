@@ -17,14 +17,17 @@ import java.util.List;
  * https://stackoverflow.com/questions/40584424/simple-android-recyclerview-example
  */
 public class RawDataViewAdapter extends RecyclerView.Adapter<RawDataViewAdapter.ViewHolder> {
+
     private final List<String> mData;
     private final LayoutInflater mInflater;
+
 
     // data is passed into the constructor
     public RawDataViewAdapter(Context context, List<String> data) {
         this.mInflater = LayoutInflater.from(context);
         this.mData = data;
     }
+
 
     // inflates the row layout from xml when needed
     @Override
@@ -33,12 +36,14 @@ public class RawDataViewAdapter extends RecyclerView.Adapter<RawDataViewAdapter.
         return new ViewHolder(view);
     }
 
+
     // binds the data to the TextView in each row
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
         String rawDataItem = mData.get(position);
         holder.myTextView.setText(rawDataItem);
     }
+
 
     // total number of rows
     @Override
@@ -57,5 +62,4 @@ public class RawDataViewAdapter extends RecyclerView.Adapter<RawDataViewAdapter.
         }
 
     }
-
 }
