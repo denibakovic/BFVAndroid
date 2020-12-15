@@ -2,6 +2,7 @@ package com.bfv.BFVAndroid.fragments.parameters;
 
 import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.text.Editable;
@@ -86,7 +87,7 @@ public class ParametersFragment extends Fragment implements ParametersRecyclerAd
 
 
     @Override
-    public void onItemClick(View view, int position) {
+    public void onParameterItemClick(View view, int position) {
         String parameterName = (String) parameters.keySet().toArray()[position];
         Command parameter = parameters.get(parameterName);
 
@@ -103,17 +104,13 @@ public class ParametersFragment extends Fragment implements ParametersRecyclerAd
         switch (parameter.getType()) {
             case BFV.TYPE_BOOLEAN:
                 buildDialog(parameter, editParameter, dialogBuilder,
-                        parameter.getDefaultValue(),
-                        parameter.getMinVal(),
-                        parameter.getDefaultValue(),
+                        parameter.getDefaultValue(), parameter.getMinVal(), parameter.getDefaultValue(),
                         true);
                 break;
 
             case BFV.TYPE_INT:
                 buildDialog(parameter, editParameter, dialogBuilder,
-                        parameter.getMinVal(),
-                        parameter.getMaxVal(),
-                        parameter.getDefaultValue(),
+                        parameter.getMinVal(), parameter.getMaxVal(), parameter.getDefaultValue(),
                         false);
                 break;
 
@@ -159,9 +156,15 @@ public class ParametersFragment extends Fragment implements ParametersRecyclerAd
     private void buildDialog(Command parameter, EditText editParameter, AlertDialog.Builder dialogBuilder, double minVal, double maxVal, double defaultValue, boolean isBoolType) {
         if (bluetoothController.getState() == BluetoothProvider.STATE_CONNECTED) {
             if(isBoolType) {
-                createDialogBoolean(parameter, dialogBuilder);
-            } else {
-                createDialog(parameter, editParameter, dialogBuilder, minVal, maxVal, defaultValue);
+                final ListView choicesListView = getBooleanListView(parameter, dialogBuilder);
+                dialogBuilder.setPositiveButton("Update", getOnClickListenerBool(parameter, choicesListView));
+            }
+            else {
+                dialogBuilder.setView(editParameter)
+                        .setMessage(String.format("Min: %s  Max: %s  Def: %s",
+                                minVal, maxVal, defaultValue))
+                        .setPositiveButton("Update",
+                                getOnClickListener(parameter, editParameter));
             }
         }
         else {
@@ -172,7 +175,8 @@ public class ParametersFragment extends Fragment implements ParametersRecyclerAd
             if(isBoolType) {
                 dialogBuilder.setMessage(String.format("TRUE or FALSE Def: %S",
                         (defaultValue == 1)));
-            } else {
+            }
+            else {
                 dialogBuilder.setMessage(String.format("Min: %s  Max: %s  Def: %s",
                         minVal, maxVal, defaultValue));
             }
@@ -180,7 +184,7 @@ public class ParametersFragment extends Fragment implements ParametersRecyclerAd
     }
 
 
-    private void createDialogBoolean(Command parameter, AlertDialog.Builder dialogBuilder) {
+    private ListView getBooleanListView(Command parameter, AlertDialog.Builder dialogBuilder) {
         final ArrayAdapter<String> arrayAdapterItems = new ArrayAdapter<>(
                 getContext(), android.R.layout.simple_list_item_single_choice, Arrays.asList("False", "True"));
 
@@ -193,62 +197,60 @@ public class ParametersFragment extends Fragment implements ParametersRecyclerAd
         choicesListView.setAdapter(arrayAdapterItems);
         choicesListView.setChoiceMode(ListView.CHOICE_MODE_SINGLE);
 
-        dialogBuilder
-                .setView(content)
-                .setPositiveButton("Update", (dialog, which) -> {
-                    int checked = choicesListView.getCheckedItemPosition();
-                    try {
-                        if( ! sharedData.getDryRun().getValue()) {
-                            if (parameter.setValue(checked)) {
-                                bluetoothController.writeToBT(parameter.serializeCommand());
-                                getSettings();
-                                Toast.makeText(getContext(), "Value sent!", Toast.LENGTH_LONG).show();
-                            }
-                            else {
-                                Toast.makeText(getContext(), "Bad input value!", Toast.LENGTH_LONG).show();
-                            }
-                        }
-                        else {
-                            Toast.makeText(getContext(), "Dry Run is ON, no command sent!", Toast.LENGTH_LONG).show();
-                            Log.i("createDialogBoolean: ", "Send command: " + parameter.serializeCommand());
-                        }
-                    } catch (NumberFormatException | NullPointerException ne) {
-                        //textField.setBackground(ParameterField.colorValueWrong);
-                        Toast.makeText(getContext(), "Bad input value!", Toast.LENGTH_LONG).show();
-                    }
-                });
+
+        dialogBuilder.setView(content);
+        return choicesListView;
     }
 
 
-    private void createDialog(Command parameter,
-                              EditText editParameter,
-                              AlertDialog.Builder dialogBuilder,
-                              double minVal, double maxVal, double defaultValue) {
-        dialogBuilder
-                .setView(editParameter)
-                .setMessage(String.format("Min: %s  Max: %s  Def: %s",
-                        minVal,
-                        maxVal,
-                        defaultValue))
-                .setPositiveButton("Update", (dialog, whichButton) -> {
-                    try {
-                        if( ! sharedData.getDryRun().getValue()) {
-                            if (parameter.setValue(editParameter.getText().toString())) {
-                                bluetoothController.writeToBT(parameter.serializeCommand());
-                                getSettings();
-                                Toast.makeText(getContext(), "Value sent!", Toast.LENGTH_SHORT).show();
-                            } else {
-                                Toast.makeText(getContext(), "Bad input value!", Toast.LENGTH_LONG).show();
-                            }
-                        } else {
-                            Toast.makeText(getContext(), "Dry Run is ON, no command sent!", Toast.LENGTH_LONG).show();
-                            Log.i("createDialog: ", "Send command: " + parameter.serializeCommand());
-                        }
-                    } catch (NumberFormatException | NullPointerException ne) {
-                        //textField.setBackground(ParameterField.colorValueWrong);
+    private DialogInterface.OnClickListener getOnClickListenerBool(Command parameter, ListView choicesListView) {
+        return (dialog, which) -> {
+            int checked = choicesListView.getCheckedItemPosition();
+            try {
+                if( ! sharedData.getDryRun().getValue()) {
+                    if (parameter.setValue(checked)) {
+                        bluetoothController.writeToBT(parameter.serializeCommand());
+                        getSettings();
+                        Toast.makeText(getContext(), "Value sent!", Toast.LENGTH_LONG).show();
+                    }
+                    else {
                         Toast.makeText(getContext(), "Bad input value!", Toast.LENGTH_LONG).show();
                     }
-                });
+                }
+                else {
+                    Toast.makeText(getContext(), "Dry Run is ON, no command sent!", Toast.LENGTH_LONG).show();
+                    Log.i("createDialogBoolean: ", "Send command: " + parameter.serializeCommand());
+                }
+            } catch (NumberFormatException | NullPointerException ne) {
+                //textField.setBackground(ParameterField.colorValueWrong);
+                Toast.makeText(getContext(), "Bad input value!", Toast.LENGTH_LONG).show();
+            }
+        };
+    }
+
+
+    private DialogInterface.OnClickListener getOnClickListener(Command parameter, EditText editParameter) {
+        return (dialog, whichButton) -> {
+            try {
+                if( ! sharedData.getDryRun().getValue()) {
+                    if (parameter.setValue(editParameter.getText().toString())) {
+                        bluetoothController.writeToBT(parameter.serializeCommand());
+                        getSettings();
+                        Toast.makeText(getContext(), "Value sent!", Toast.LENGTH_SHORT).show();
+                    }
+                    else {
+                        Toast.makeText(getContext(), "Bad input value!", Toast.LENGTH_LONG).show();
+                    }
+                }
+                else {
+                    Toast.makeText(getContext(), "Dry Run is ON, no command sent!", Toast.LENGTH_LONG).show();
+                    Log.i("createDialog: ", "Send command: " + parameter.serializeCommand());
+                }
+            } catch (NumberFormatException | NullPointerException ne) {
+                //textField.setBackground(ParameterField.colorValueWrong);
+                Toast.makeText(getContext(), "Bad input value!", Toast.LENGTH_LONG).show();
+            }
+        };
     }
 
 

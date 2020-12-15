@@ -61,7 +61,7 @@ public class ParametersRecyclerAdapter extends RecyclerView.Adapter<ParametersRe
 
         @Override
         public void onClick(View view) {
-            if (mClickListener != null) mClickListener.onItemClick(view, getAdapterPosition());
+            if (mClickListener != null) mClickListener.onParameterItemClick(view, getAdapterPosition());
         }
     }
 
@@ -120,6 +120,6 @@ public class ParametersRecyclerAdapter extends RecyclerView.Adapter<ParametersRe
      * Parent activity/fragment will implement this interface to respond to click events
      */
     public interface ItemClickListener {
-        void onItemClick(View view, int position);
+        void onParameterItemClick(View view, int position);
     }
 }
