@@ -12,11 +12,12 @@
         android:text="@string/raw_data_stream"
         android:paddingBottom="3dp"/>
 
-    <androidx.recyclerview.widget.RecyclerView
+    <com.bfv.BFVAndroid.fragments.dashboard.RawDataRecyclerView
         android:id="@+id/rawDataRecyclerView"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
+        android:longClickable="true"
         tools:listitem="@layout/raw_data_recycler_view_row" />
 
 </LinearLayout>

@@ -51,7 +51,6 @@ public class MainActivity extends AppCompatActivity implements BluetoothControll
     // TODO: add parameters save / reload / share
     // TODO: fix viewGraph and make it preserve state until disconnect
     // TODO: mark commands that are made for higher HW version different color
-    // TODO: add rawData save / share
     // MAYBE: add connection status(or icon) connected / disconnected to status bar
     @Override
     protected void onCreate(Bundle savedInstanceState) {

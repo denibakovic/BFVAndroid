@@ -60,6 +60,5 @@ public class RawDataViewAdapter extends RecyclerView.Adapter<RawDataViewAdapter.
             super(itemView);
             myTextView = itemView.findViewById(R.id.recyclerViewRow);
         }
-
     }
 }

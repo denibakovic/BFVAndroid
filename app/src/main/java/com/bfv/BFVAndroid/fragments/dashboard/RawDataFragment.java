@@ -1,5 +1,8 @@
 package com.bfv.BFVAndroid.fragments.dashboard;
 
+import android.content.ClipData;
+import android.content.ClipboardManager;
+import android.content.Context;
 import android.os.Bundle;
 
 import androidx.annotation.Nullable;
@@ -7,21 +10,22 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import com.bfv.BFVAndroid.R;
 import com.bfv.BFVAndroid.SharedDataViewModel;
 
 import java.util.ArrayList;
+import java.util.ConcurrentModificationException;
 
 
-public class RawDataFragment extends Fragment {
+public class RawDataFragment extends Fragment implements RawDataRecyclerView.LongClickListener {
 
-    private RecyclerView rawDataRecyclerView;
+    private RawDataRecyclerView rawDataRecyclerView;
     private ArrayList<String> rawDataArray;
     private RawDataViewAdapter rawDataAdapter;
 
@@ -48,6 +52,8 @@ public class RawDataFragment extends Fragment {
 
         rawDataRecyclerView.setAdapter(rawDataAdapter);
 
+        rawDataRecyclerView.setLongClickListener(this);
+
         // Inflate the layout for this fragment
         return rootView;
     }
@@ -63,4 +69,24 @@ public class RawDataFragment extends Fragment {
             rawDataRecyclerView.scrollToPosition(rawDataArray.size() -1 );
         }
     };
+
+
+    @Override
+    public void onRawDataLongClick(View view) {
+        try {
+            StringBuilder data = new StringBuilder();
+            for (String str : rawDataArray) {
+                data.append(str).append("\n");
+            }
+
+            ClipboardManager clipboard = (ClipboardManager)getContext().getSystemService(Context.CLIPBOARD_SERVICE);
+            ClipData clip = ClipData.newPlainText("BFV Data Stream", data);
+            clipboard.setPrimaryClip(clip);
+
+            Toast.makeText(getContext(), "Data Stream copied!", Toast.LENGTH_SHORT).show();
+        }
+        catch (ConcurrentModificationException e) {
+            Toast.makeText(getContext(), "Please disconnect before coping!", Toast.LENGTH_LONG).show();
+        }
+    }
 }
