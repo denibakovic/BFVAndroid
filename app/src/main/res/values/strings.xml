@@ -11,6 +11,7 @@
     <string name="battery_value">%1$s%%(%2$sV)</string>
     <string name="temperature">Temperature:</string>
     <string name="temperature_value">%1$s°C</string>
+    <string name="vario">%1$sm/s</string>
 
     <string name="about_app">BlueFlyVario Android app
         \nAuthor: Deni Bakovic

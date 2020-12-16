@@ -9,23 +9,33 @@
 
     <androidx.fragment.app.FragmentContainerView
         android:id="@+id/statusFragmentContainerView"
-        android:name="com.bfv.BFVAndroid.fragments.dashboard.StatusFragment"
+        android:name="com.bfv.BFVAndroid.fragments.dashboard.status.StatusFragment"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_marginLeft="16dp"
         android:layout_marginTop="16dp"
         android:layout_marginRight="16dp"
-        android:layout_weight="30" />
+        android:layout_weight="20" />
+
+    <androidx.fragment.app.FragmentContainerView
+        android:id="@+id/varioFragmentContainerView"
+        android:name="com.bfv.BFVAndroid.fragments.dashboard.vario.VarioFragment"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_marginLeft="16dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginRight="16dp"
+        android:layout_weight="20" />
 
     <androidx.fragment.app.FragmentContainerView
         android:id="@+id/rawDataFragmentContainerView"
-        android:name="com.bfv.BFVAndroid.fragments.dashboard.RawDataFragment"
+        android:name="com.bfv.BFVAndroid.fragments.dashboard.rawdata.RawDataFragment"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_marginLeft="16dp"
         android:layout_marginTop="8dp"
         android:layout_marginRight="16dp"
         android:layout_marginBottom="8dp"
-        android:layout_weight="70" />
+        android:layout_weight="60" />
 
 </LinearLayout>

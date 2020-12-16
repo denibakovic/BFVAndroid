@@ -1,4 +1,4 @@
-package com.bfv.BFVAndroid.fragments.dashboard;
+package com.bfv.BFVAndroid.fragments.dashboard.rawdata;
 
 import android.content.ClipData;
 import android.content.ClipboardManager;

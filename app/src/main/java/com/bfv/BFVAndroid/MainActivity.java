@@ -46,11 +46,9 @@ public class MainActivity extends AppCompatActivity implements BluetoothControll
     private SharedPreferences sharedPreferences;
 
 
-    // TODO: implement custom vario / vario graph
     // TODO: do not autoconnect on rotate if user disconnected previously
     // TODO: add parameters save / reload / share
-    // TODO: fix viewGraph and make it preserve state until disconnect
-    // TODO: mark commands that are made for higher HW version different color
+    // MAYBE: mark commands that are made for higher HW version different color
     // MAYBE: add connection status(or icon) connected / disconnected to status bar
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,6 +58,8 @@ public class MainActivity extends AppCompatActivity implements BluetoothControll
         // Re-created activities receive the same SharedDataViewModel instance created by the first activity.
         sharedData = new ViewModelProvider(this).get(SharedDataViewModel.class);
 
+        // Bluetooth application provides all bluetooth related methods
+        // via bluetooth controller interface
         BluetoothAplication bluetoothAplication = (BluetoothAplication) getApplication();
         bluetoothProvider = bluetoothAplication.getBluetoothProvider();
         bluetoothProvider.setSharedData(sharedData);

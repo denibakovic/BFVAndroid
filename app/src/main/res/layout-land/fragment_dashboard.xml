@@ -4,11 +4,14 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:weightSum="100"
-    tools:context=".fragments.dashboard.DashboardFragment">
+    android:layout_marginStart="16dp"
+    android:layout_marginLeft="16dp"
+    android:layout_marginEnd="16dp"
+    android:layout_marginRight="16dp"
+    tools:context=".fragments.dashboard.DashboardFragment"
+    android:orientation="horizontal">
 
-    <androidx.fragment.app.FragmentContainerView
-        android:id="@+id/statusFragmentContainerView"
-        android:name="com.bfv.BFVAndroid.fragments.dashboard.StatusFragment"
+    <LinearLayout
         android:layout_width="0dp"
         android:layout_height="match_parent"
         android:layout_marginStart="4dp"
@@ -17,7 +20,31 @@
         android:layout_marginEnd="4dp"
         android:layout_marginRight="4dp"
         android:layout_marginBottom="16dp"
-        android:layout_weight="40" />
+        android:layout_weight="40"
+        android:orientation="vertical"
+        android:weightSum="100">
+
+        <androidx.fragment.app.FragmentContainerView
+            android:id="@+id/statusFragmentContainerView"
+            android:name="com.bfv.BFVAndroid.fragments.dashboard.StatusFragment"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_marginStart="4dp"
+            android:layout_marginLeft="4dp"
+            android:layout_marginBottom="16dp"
+            android:layout_weight="60" />
+
+        <androidx.fragment.app.FragmentContainerView
+            android:id="@+id/varioFragmentContainerView"
+            android:name="com.bfv.BFVAndroid.fragments.dashboard.vario.VarioFragment"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_marginStart="4dp"
+            android:layout_marginLeft="4dp"
+            android:layout_marginTop="16dp"
+            android:layout_weight="40" />
+
+    </LinearLayout>
 
     <androidx.fragment.app.FragmentContainerView
         android:id="@+id/rawDataFragmentContainerView"

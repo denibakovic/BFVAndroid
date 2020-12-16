@@ -1,4 +1,4 @@
-package com.bfv.BFVAndroid.fragments.dashboard;
+package com.bfv.BFVAndroid.fragments.dashboard.status;
 
 import android.content.Context;
 import android.os.Bundle;
@@ -65,6 +65,7 @@ public class StatusFragment extends Fragment {
         return rootView;
     }
 
+
     private void setTextBackgroundColor(int p) {
         textViewBattery.setTextColor(ContextCompat.getColor(getContext(), p));
         textViewAltitude.setTextColor(ContextCompat.getColor(getContext(), p));
@@ -88,17 +89,14 @@ public class StatusFragment extends Fragment {
     private final Observer<Integer> connectionStateObserver = new Observer<Integer>() {
         @Override
         public void onChanged(@Nullable Integer i) {
-            switch (i) {
-                case BluetoothProvider.STATE_CONNECTED:
-                    rootView.post(() ->  {
-                        setTextBackgroundColor(R.color.colorPrimary);
-                    });
-                    break;
-                default:
-                    rootView.post(() ->  {
-                        setTextBackgroundColor(R.color.colorGrey);
-                    });
-                    break;
+            if (i == BluetoothProvider.STATE_CONNECTED) {
+                rootView.post(() -> {
+                    setTextBackgroundColor(R.color.colorPrimary);
+                });
+            } else {
+                rootView.post(() -> {
+                    setTextBackgroundColor(R.color.colorGrey);
+                });
             }
         }
     };

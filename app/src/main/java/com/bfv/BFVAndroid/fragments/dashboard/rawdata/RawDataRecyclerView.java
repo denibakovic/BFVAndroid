@@ -1,4 +1,4 @@
-package com.bfv.BFVAndroid.fragments.dashboard;
+package com.bfv.BFVAndroid.fragments.dashboard.rawdata;
 
 import android.content.Context;
 import android.os.Handler;

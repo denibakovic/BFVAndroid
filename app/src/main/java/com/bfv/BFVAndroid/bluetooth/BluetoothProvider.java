@@ -6,6 +6,7 @@ import android.bluetooth.BluetoothSocket;
 import android.util.Log;
 
 import com.bfv.BFVAndroid.SharedDataViewModel;
+import com.bfv.BFVAndroid.kalmanFilteredVario.KalmanFilteredVario;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -29,6 +30,9 @@ public class BluetoothProvider {
     // "random" unique identifier
     private static final UUID BT_MODULE_UUID = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB");
 
+    private final KalmanFilteredVario kalmanFilteredVario;
+    private long lastAltitudeTime;
+    private boolean firstAltitude = true;
 
     // Member fields
     private final BluetoothAdapter mBluetoothAdapter;
@@ -61,6 +65,7 @@ public class BluetoothProvider {
         mNewState = mState;
         connectedDevice = null;
         previousConnectedDevice = null;
+        kalmanFilteredVario = new KalmanFilteredVario(0.2, 0.5);
     }
 
 
@@ -142,6 +147,10 @@ public class BluetoothProvider {
             previousConnectedDevice = connectedDevice;
         }
         connectedDevice = null;
+
+        kalmanFilteredVario.reset();
+        firstAltitude = true;
+        sharedData.setVario(0.0);
 
         // Update ConnectionStatus
         updateConnectionStatusInfo();
@@ -377,7 +386,24 @@ public class BluetoothProvider {
 
                     // Update device altitude
                     if(sharedData.bfv.isUpdatedAltitude()) {
-                        sharedData.setDeviceAltitude(sharedData.bfv.getAltitude());
+                        double altitude = sharedData.bfv.getAltitude();
+                        sharedData.setDeviceAltitude(altitude);
+
+                        double timeDelta;
+                        long currentTime = System.currentTimeMillis();
+
+                        if(firstAltitude) {
+                            timeDelta = 1.0;
+                            firstAltitude = false;
+                        }
+                        else {
+                            timeDelta = (currentTime - lastAltitudeTime) / 1000.0;  // convert to seconds
+                        }
+
+                        kalmanFilteredVario.addData(timeDelta, altitude);
+                        sharedData.setVario(kalmanFilteredVario.getVar());
+
+                        lastAltitudeTime = currentTime;
                     }
                 } catch (IOException e) {
                     Log.i(TAG, "IOException in mConnectedThread.run()");
@@ -386,6 +412,7 @@ public class BluetoothProvider {
                 }
             }
         }
+
 
         /**
          * Write to the connected OutStream.

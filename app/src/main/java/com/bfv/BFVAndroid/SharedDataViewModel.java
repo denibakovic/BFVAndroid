@@ -13,6 +13,8 @@ import BFVlib.BFV;
 public class SharedDataViewModel extends ViewModel{
     private final MutableLiveData<Integer> connectionState;
 
+    private final MutableLiveData<Double> vario;
+
     private final MutableLiveData<Double> deviceBattery;
     private final MutableLiveData<String> deviceHwVersion;
     private final MutableLiveData<Double> deviceTemp;
@@ -31,6 +33,8 @@ public class SharedDataViewModel extends ViewModel{
         rawDataObservable = new MutableLiveData<>();
         rawData = new ArrayList<>();
 
+        vario = new MutableLiveData<>(0.0);
+
         deviceAltitude = new MutableLiveData<>(Double.NaN);
         deviceBattery = new MutableLiveData<>(Double.NaN);
         deviceHwVersion = new MutableLiveData<>("");
@@ -41,6 +45,14 @@ public class SharedDataViewModel extends ViewModel{
 
         bfv = new BFV();
     }
+
+
+    /**
+     * Vario
+     */
+    public LiveData<Double> getVario() {return this.vario;}
+
+    public void setVario(Double vario) {this.vario.postValue(vario);}
 
 
     /**
