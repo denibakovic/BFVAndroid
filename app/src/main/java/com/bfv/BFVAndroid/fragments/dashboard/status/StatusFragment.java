@@ -59,8 +59,6 @@ public class StatusFragment extends Fragment {
             setTextBackgroundColor(R.color.colorGrey);
         }
 
-        // MAYBE: add vario to status
-
         // Inflate the layout for this fragment
         return rootView;
     }

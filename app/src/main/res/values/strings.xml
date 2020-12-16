@@ -13,8 +13,15 @@
     <string name="temperature_value">%1$s°C</string>
     <string name="vario">%1$sm/s</string>
 
-    <string name="about_app">BlueFlyVario Android app
-        \nAuthor: Deni Bakovic
+    <string name="about_app">
+        \n<big><b>BlueFlyVario Android app</b></big>
+        \n
+        \nKalman Filter Vario code from by BlueFlyVario flight instrument creator
+        \n<b>Alistair Dickie</b>
+        \nhttps://www.blueflyvario.com
+        \n
+        \n
+        \n<b>Author: Deni Bakovic</b>
     </string>
 
     <string name="raw_data_stream"><u>Data Stream:</u></string>

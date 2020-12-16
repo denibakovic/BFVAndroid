@@ -9,7 +9,8 @@
         android:id="@+id/about_app"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/about_app"
+        android:autoLink="web"
         android:padding="24dp"
+        android:text="@string/about_app"
         app:drawableTopCompat="@mipmap/ic_launcher" />
 </ScrollView>

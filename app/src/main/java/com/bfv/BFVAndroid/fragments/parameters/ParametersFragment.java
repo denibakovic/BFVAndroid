@@ -65,7 +65,7 @@ public class ParametersFragment extends Fragment implements ParametersRecyclerAd
         parametersRecyclerView.setAdapter(parametersRecyclerAdapter);
 
         /*
-         * HACK: this HACK actually works for updating values, but is should probably be implemented
+         * HACK: this actually works for updating values, but is should probably be implemented
          *  differently
          *
          * sharedData.bfv.getAllParameters() gets passed to ParametersRecyclerAdapter via parameters
