@@ -6,11 +6,6 @@
         android:checked="true"
         android:title="@string/dryRun" />
     <item
-        android:id="@+id/settings_autoconnect"
-        android:checkable="true"
-        android:checked="true"
-        android:title="@string/autoConnect" />
-    <item
         android:id="@+id/settings_sendCommand"
         android:title="@string/sendCommand" />
     <item

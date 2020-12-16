@@ -19,7 +19,6 @@
 
     <string name="raw_data_stream"><u>Data Stream:</u></string>
     <string name="sendCommand">Send Command</string>
-    <string name="autoConnect">Autoconnect</string>
     <string name="dryRun">Dry run</string>
 
 </resources>

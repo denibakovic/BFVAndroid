@@ -1,9 +1,6 @@
 package com.bfv.BFVAndroid;
 
-import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
-import android.content.Context;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
@@ -38,15 +35,16 @@ import BFVlib.Command;
  */
 public class MainActivity extends AppCompatActivity implements BluetoothController, SendCommandRecyclerAdapter.ItemClickListener {
 
+    private static final int TAB_DEVICES = 0;
+    private static final int TAB_DASHBOARD = 1;
+    private static final int TAB_PARAMETERS = 2;
+
     private BluetoothProvider bluetoothProvider;
     private SharedDataViewModel sharedData;
     private MenuItem sendCommand;
-    private MenuItem autoconnect;
     private TreeMap<String, Command> commands;
-    private SharedPreferences sharedPreferences;
 
 
-    // TODO: do not autoconnect on rotate if user disconnected previously
     // TODO: add parameters save / reload / share
     // MAYBE: mark commands that are made for higher HW version different color
     // MAYBE: add connection status(or icon) connected / disconnected to status bar
@@ -72,39 +70,19 @@ public class MainActivity extends AppCompatActivity implements BluetoothControll
         PagerAdapter pagerAdapter = new PagerAdapter(getSupportFragmentManager());
 
         // Attaching fragments to adapter
-        pagerAdapter.addFragment(new DevicesFragment(),"Devices");
-        pagerAdapter.addFragment(new DashboardFragment(),"Dashboard");
-        pagerAdapter.addFragment(new ParametersFragment(),"Parameters");
+        pagerAdapter.addFragment(new DevicesFragment(),"Devices");  // TAB_DEVICES
+        pagerAdapter.addFragment(new DashboardFragment(),"Dashboard");  // TAB_DASHBOARD
+        pagerAdapter.addFragment(new ParametersFragment(),"Parameters");  // TAB_PARAMETERS
 
         viewPager.setAdapter(pagerAdapter);
         tabLayout.setupWithViewPager(viewPager);
 
         // Setting icons
-        tabLayout.getTabAt(0).setIcon(R.drawable.ic_devices_24);
-        tabLayout.getTabAt(1).setIcon(R.drawable.ic_dashboard_black_24dp);
-        tabLayout.getTabAt(2).setIcon(R.drawable.ic_parameters_24);
+        tabLayout.getTabAt(TAB_DEVICES).setIcon(R.drawable.ic_devices_24);
+        tabLayout.getTabAt(TAB_DASHBOARD).setIcon(R.drawable.ic_dashboard_black_24dp);
+        tabLayout.getTabAt(TAB_PARAMETERS).setIcon(R.drawable.ic_parameters_24);
 
-        sharedPreferences = getSharedPreferences("com.bfv.BFVAndroid", Context.MODE_PRIVATE);
-
-        if(sharedPreferences.getBoolean("autoconnect", false)) {
-            viewPager.setCurrentItem(1);
-        }
-        else {
-            viewPager.setCurrentItem(0);
-        }
-    }
-
-
-    @Override
-    protected void onResume() {
-        if(sharedPreferences.getBoolean("autoconnect", false)
-                && bluetoothProvider.getState() == BluetoothProvider.STATE_DISCONNECTED) {
-            String mac = sharedPreferences.getString("autoconnectDevice", "");
-            if( ! mac.equals("")) {
-                connectBtDevice(BluetoothAdapter.getDefaultAdapter().getRemoteDevice(mac));
-            }
-        }
-        super.onResume();
+        viewPager.setCurrentItem(TAB_DASHBOARD);
     }
 
 
@@ -112,7 +90,6 @@ public class MainActivity extends AppCompatActivity implements BluetoothControll
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.settings_menu, menu);
         sendCommand = menu.findItem(R.id.settings_sendCommand);
-        autoconnect = menu.findItem(R.id.settings_autoconnect);
         return true;
     }
 
@@ -120,8 +97,6 @@ public class MainActivity extends AppCompatActivity implements BluetoothControll
     @Override
     public boolean onMenuOpened(int featureId, Menu menu) {
         sendCommand.setEnabled(getState() == BluetoothProvider.STATE_CONNECTED);
-        autoconnect.setChecked(sharedPreferences.getBoolean("autoconnect", false));
-        autoconnect.setEnabled(getState() == BluetoothProvider.STATE_CONNECTED);
 
         return super.onMenuOpened(featureId, menu);
     }
@@ -142,24 +117,15 @@ public class MainActivity extends AppCompatActivity implements BluetoothControll
                     item.setChecked(true);
                 }
                 return true;
-            case R.id.settings_autoconnect:
-                if(item.isChecked()) {
-                    // "Autoconnect OFF"
-                    setAutoconnectState(false, "", item);
-                } else {
-                    // "Autoconnect ON"
-                    BluetoothDevice device = getConnectedDevice();
-                    if(device != null) {
-                        setAutoconnectState(true, device.getAddress(), item);
-                    }
-                }
-                return true;
+
             case R.id.settings_about:
                 showAboutDialog();
                 return true;
+
             case R.id.settings_sendCommand:
                 showSendCommandDialog();
                 return true;
+
             default:
                 return super.onOptionsItemSelected(item);
         }
@@ -259,13 +225,6 @@ public class MainActivity extends AppCompatActivity implements BluetoothControll
     @Override
     public BluetoothDevice getPreviousConnectedDevice() {
         return bluetoothProvider.getPreviousConnectedDevice();
-    }
-
-
-    private void setAutoconnectState(boolean autoconnect, String mac, MenuItem item) {
-        sharedPreferences.edit().putBoolean("autoconnect", autoconnect).apply();
-        sharedPreferences.edit().putString("autoconnectDevice", mac).apply();
-        item.setChecked(autoconnect);
     }
 
 
