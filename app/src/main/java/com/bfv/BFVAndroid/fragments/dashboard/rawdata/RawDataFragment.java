@@ -4,17 +4,16 @@ import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
 import android.os.Bundle;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
-
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.Toast;
 
 import com.bfv.BFVAndroid.R;
 import com.bfv.BFVAndroid.SharedDataViewModel;
@@ -72,7 +71,7 @@ public class RawDataFragment extends Fragment implements RawDataRecyclerView.Lon
 
 
     @Override
-    public void onRawDataLongClick(View view) {
+    public void onRawDataLongClick() {
         try {
             StringBuilder data = new StringBuilder();
             for (String str : rawDataArray) {

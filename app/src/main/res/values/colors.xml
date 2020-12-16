@@ -8,7 +8,4 @@
     <color name="colorGrey">#cccccc</color>
 
     <color name="selected">#00BCD4</color>
-    <color name="selecting">#1B03A9F4</color>
-
-    <color name="black">#000000</color>
 </resources>

@@ -1,5 +1,6 @@
 package com.bfv.BFVAndroid;
 
+import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentPagerAdapter;
@@ -8,13 +9,17 @@ import java.util.ArrayList;
 
 
 public class PagerAdapter extends FragmentPagerAdapter {
-    ArrayList<Fragment> fragmentsList = new ArrayList<>();
-    ArrayList<String> fragmentsTitle = new ArrayList<>();
+
+    private final ArrayList<Fragment> fragmentsList = new ArrayList<>();
+    private final ArrayList<String> fragmentsTitle = new ArrayList<>();
+
 
     public PagerAdapter(FragmentManager fm) {
         super(fm, BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT);
     }
 
+
+    @NonNull
     @Override
     public Fragment getItem(int position) {
         return fragmentsList.get(position);

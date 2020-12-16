@@ -88,13 +88,9 @@ public class StatusFragment extends Fragment {
         @Override
         public void onChanged(@Nullable Integer i) {
             if (i == BluetoothProvider.STATE_CONNECTED) {
-                rootView.post(() -> {
-                    setTextBackgroundColor(R.color.colorPrimary);
-                });
+                rootView.post(() -> setTextBackgroundColor(R.color.colorPrimary));
             } else {
-                rootView.post(() -> {
-                    setTextBackgroundColor(R.color.colorGrey);
-                });
+                rootView.post(() -> setTextBackgroundColor(R.color.colorGrey));
             }
         }
     };

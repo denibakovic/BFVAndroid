@@ -27,5 +27,13 @@
     <string name="raw_data_stream"><u>Data Stream:</u></string>
     <string name="sendCommand">Send Command</string>
     <string name="dryRun">Dry run</string>
+    <string name="paired_devices">Paired Devices:</string>
+    <string name="default_parameter">Default:</string>
+    <string name="no_paired_devices">No paired devices!</string>
+    <string name="connected_to">"Connected to %1$s"</string>
+    <string name="connecting">Connecting ..</string>
+    <string name="disconnected">Disconnected!</string>
+    <string name="no_bluetooth">Phone doesn\'t have bluetooth!</string>
+    <string name="bluetooth_off">Bluetooth disabled!</string>
 
 </resources>

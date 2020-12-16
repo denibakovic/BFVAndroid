@@ -25,7 +25,7 @@ public class SharedDataViewModel extends ViewModel{
 
     private final MutableLiveData<Boolean> dryRun;
 
-    public BFV bfv;
+    private final BFV bfv;
 
 
     // Cannot invoke setValue on a background thread, use postValue
@@ -35,15 +35,23 @@ public class SharedDataViewModel extends ViewModel{
 
         vario = new MutableLiveData<>(0.0);
 
+        deviceHwVersion = new MutableLiveData<>("");
         deviceAltitude = new MutableLiveData<>(Double.NaN);
         deviceBattery = new MutableLiveData<>(Double.NaN);
-        deviceHwVersion = new MutableLiveData<>("");
         deviceTemp = new MutableLiveData<>(Double.NaN);
 
         connectionState = new MutableLiveData<>(BluetoothProvider.STATE_DISCONNECTED);
         dryRun = new MutableLiveData<>(Boolean.TRUE);
 
         bfv = new BFV();
+    }
+
+
+    /**
+     * BFV
+     */
+    public BFV getBfv() {
+        return this.bfv;
     }
 
 

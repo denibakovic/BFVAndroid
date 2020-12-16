@@ -6,6 +6,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bfv.BFVAndroid.R;
@@ -30,8 +31,9 @@ public class RawDataViewAdapter extends RecyclerView.Adapter<RawDataViewAdapter.
 
 
     // inflates the row layout from xml when needed
+    @NonNull
     @Override
-    public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = mInflater.inflate(R.layout.raw_data_recycler_view_row, parent, false);
         return new ViewHolder(view);
     }
@@ -54,7 +56,7 @@ public class RawDataViewAdapter extends RecyclerView.Adapter<RawDataViewAdapter.
 
     // stores and recycles views as they are scrolled off screen
     public static class ViewHolder extends RecyclerView.ViewHolder {
-        TextView myTextView;
+        private final TextView myTextView;
 
         ViewHolder(View itemView) {
             super(itemView);

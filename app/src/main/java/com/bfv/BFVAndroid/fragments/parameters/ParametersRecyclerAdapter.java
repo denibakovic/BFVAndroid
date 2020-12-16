@@ -7,6 +7,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -28,26 +29,24 @@ public class ParametersRecyclerAdapter extends RecyclerView.Adapter<ParametersRe
     private final Map<String, Command> mParameters;
     private final LayoutInflater mInflater;
     private ItemClickListener mClickListener;
-    private final SharedDataViewModel sharedData;
     private final Context mContext;
     private final BluetoothController bluetoothController;
 
     // Command is passed into the constructor
-    ParametersRecyclerAdapter(SharedDataViewModel sharedData, Context context, Map<String,
+    ParametersRecyclerAdapter(Context context, Map<String,
             Command> parameters, BluetoothController bluetoothController) {
         this.mInflater = LayoutInflater.from(context);
         this.mParameters = parameters;
-        this.sharedData = sharedData;
         this.mContext = context;
         this.bluetoothController = bluetoothController;
     }
 
     // stores and recycles views as they are scrolled off screen
     public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
-        TextView parameterName;
-        TextView parameterDescription;
-        TextView parameterValue;
-        TextView defaultValue;
+        private final TextView parameterName;
+        private final TextView parameterDescription;
+        private final TextView parameterValue;
+        private final TextView defaultValue;
 
         ViewHolder(View itemView) {
             super(itemView);
@@ -61,13 +60,14 @@ public class ParametersRecyclerAdapter extends RecyclerView.Adapter<ParametersRe
 
         @Override
         public void onClick(View view) {
-            if (mClickListener != null) mClickListener.onParameterItemClick(view, getAdapterPosition());
+            if (mClickListener != null) mClickListener.onParameterItemClick(getAdapterPosition());
         }
     }
 
     // Inflates the row layout from xml when needed
+    @NonNull
     @Override
-    public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = mInflater.inflate(R.layout.parameters_recycler_view_row, parent, false);
 
         return new ViewHolder(view);
@@ -120,6 +120,6 @@ public class ParametersRecyclerAdapter extends RecyclerView.Adapter<ParametersRe
      * Parent activity/fragment will implement this interface to respond to click events
      */
     public interface ItemClickListener {
-        void onParameterItemClick(View view, int position);
+        void onParameterItemClick(int position);
     }
 }

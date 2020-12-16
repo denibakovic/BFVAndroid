@@ -17,9 +17,9 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager.widget.ViewPager;
 
+import com.bfv.BFVAndroid.bluetooth.BluetoothApplication;
 import com.bfv.BFVAndroid.bluetooth.BluetoothController;
 import com.bfv.BFVAndroid.bluetooth.BluetoothProvider;
-import com.bfv.BFVAndroid.bluetooth.BluetoothAplication;
 import com.bfv.BFVAndroid.fragments.dashboard.DashboardFragment;
 import com.bfv.BFVAndroid.fragments.devices.DevicesFragment;
 import com.bfv.BFVAndroid.fragments.parameters.ParametersFragment;
@@ -58,8 +58,8 @@ public class MainActivity extends AppCompatActivity implements BluetoothControll
 
         // Bluetooth application provides all bluetooth related methods
         // via bluetooth controller interface
-        BluetoothAplication bluetoothAplication = (BluetoothAplication) getApplication();
-        bluetoothProvider = bluetoothAplication.getBluetoothProvider();
+        BluetoothApplication bluetoothApplication = (BluetoothApplication) getApplication();
+        bluetoothProvider = bluetoothApplication.getBluetoothProvider();
         bluetoothProvider.setSharedData(sharedData);
 
         setContentView(R.layout.activity_main);
@@ -70,22 +70,24 @@ public class MainActivity extends AppCompatActivity implements BluetoothControll
         PagerAdapter pagerAdapter = new PagerAdapter(getSupportFragmentManager());
 
         // Attaching fragments to adapter
-        pagerAdapter.addFragment(new DevicesFragment(),"Devices");  // TAB_DEVICES
-        pagerAdapter.addFragment(new DashboardFragment(),"Dashboard");  // TAB_DASHBOARD
-        pagerAdapter.addFragment(new ParametersFragment(),"Parameters");  // TAB_PARAMETERS
+        pagerAdapter.addFragment(new DevicesFragment(), getString(R.string.title_devices));  // TAB_DEVICES
+        pagerAdapter.addFragment(new DashboardFragment(),getString(R.string.title_dashboard));  // TAB_DASHBOARD
+        pagerAdapter.addFragment(new ParametersFragment(),getString(R.string.title_parameters));  // TAB_PARAMETERS
 
         viewPager.setAdapter(pagerAdapter);
         tabLayout.setupWithViewPager(viewPager);
 
         // Setting icons
         tabLayout.getTabAt(TAB_DEVICES).setIcon(R.drawable.ic_devices_24);
-        tabLayout.getTabAt(TAB_DASHBOARD).setIcon(R.drawable.ic_dashboard_black_24dp);
+        tabLayout.getTabAt(TAB_DASHBOARD).setIcon(R.drawable.ic_dashboard_24dp);
         tabLayout.getTabAt(TAB_PARAMETERS).setIcon(R.drawable.ic_parameters_24);
 
         viewPager.setCurrentItem(TAB_DASHBOARD);
         ActionBar actionBar = getSupportActionBar();
-        actionBar.setDisplayShowHomeEnabled(true);
-        actionBar.setIcon(R.drawable.ic_launcher_foreground);
+        if (actionBar != null) {
+            actionBar.setDisplayShowHomeEnabled(true);
+            actionBar.setIcon(R.drawable.ic_launcher_foreground);
+        }
     }
 
 
@@ -136,7 +138,7 @@ public class MainActivity extends AppCompatActivity implements BluetoothControll
 
 
     @Override
-    public void onSendCommandItemClick(View view, int position) {
+    public void onSendCommandItemClick(int position) {
         String commandName = (String) commands.keySet().toArray()[position];
         Command command = commands.get(commandName);
 
@@ -253,7 +255,7 @@ public class MainActivity extends AppCompatActivity implements BluetoothControll
         RecyclerView commandsRecyclerView = convertView.findViewById(R.id.sendCommandRecyclerView);
         commandsRecyclerView.setLayoutManager(new LinearLayoutManager(this));
 
-        commands = new TreeMap<>(sharedData.bfv.getAllCommands());
+        commands = new TreeMap<>(sharedData.getBfv().getAllCommands());
         SendCommandRecyclerAdapter adapter = new SendCommandRecyclerAdapter(this, commands);
         adapter.setClickListener(this);
         commandsRecyclerView.setAdapter(adapter);

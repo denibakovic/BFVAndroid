@@ -51,7 +51,7 @@ public class ParametersFragment extends Fragment implements ParametersRecyclerAd
                              Bundle savedInstanceState) {
         // sharedData
         sharedData = new ViewModelProvider(getActivity()).get(SharedDataViewModel.class);
-        parameters = sharedData.bfv.getAllParameters();
+        parameters = sharedData.getBfv().getAllParameters();
 
         // Views
         View rootView = inflater.inflate(R.layout.fragment_parameters, container, false);
@@ -60,7 +60,7 @@ public class ParametersFragment extends Fragment implements ParametersRecyclerAd
         // Set up the RecyclerView layout manager
         parametersRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
 
-        parametersRecyclerAdapter = new ParametersRecyclerAdapter(sharedData, getContext(), parameters, bluetoothController);
+        parametersRecyclerAdapter = new ParametersRecyclerAdapter(getContext(), parameters, bluetoothController);
         parametersRecyclerAdapter.setClickListener(this);
         parametersRecyclerView.setAdapter(parametersRecyclerAdapter);
 
@@ -68,7 +68,7 @@ public class ParametersFragment extends Fragment implements ParametersRecyclerAd
          * HACK: this actually works for updating values, but is should probably be implemented
          *  differently
          *
-         * sharedData.bfv.getAllParameters() gets passed to ParametersRecyclerAdapter via parameters
+         * sharedData.getBfv().getAllParameters() gets passed to ParametersRecyclerAdapter via parameters
          * variable so it doesn't update currently shown items unless user scrolls them off screen
          * and back on(its not aware of changes until it tries to access the values).
          *
@@ -87,7 +87,7 @@ public class ParametersFragment extends Fragment implements ParametersRecyclerAd
 
 
     @Override
-    public void onParameterItemClick(View view, int position) {
+    public void onParameterItemClick(int position) {
         String parameterName = (String) parameters.keySet().toArray()[position];
         Command parameter = parameters.get(parameterName);
 
@@ -264,6 +264,6 @@ public class ParametersFragment extends Fragment implements ParametersRecyclerAd
 
 
     private void getSettings() {
-        bluetoothController.writeToBT(sharedData.bfv.getAllCommands().get("getSettings").serializeCommand());
+        bluetoothController.writeToBT(sharedData.getBfv().getAllCommands().get("getSettings").serializeCommand());
     }
 }

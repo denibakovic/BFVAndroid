@@ -3,7 +3,8 @@ package com.bfv.BFVAndroid.bluetooth;
 import android.app.Application;
 
 
-public class BluetoothAplication extends Application {
+public class BluetoothApplication extends Application {
+
     private BluetoothProvider bluetoothProvider;
 
     @Override
@@ -13,10 +14,6 @@ public class BluetoothAplication extends Application {
         bluetoothProvider = new BluetoothProvider();
     }
 
-    @Override
-    public void onTerminate() {
-        super.onTerminate();
-    }
 
     public BluetoothProvider getBluetoothProvider(){
         return bluetoothProvider;

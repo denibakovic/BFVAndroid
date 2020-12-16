@@ -78,7 +78,7 @@ public class BluetoothProvider {
         Log.d(TAG, "connect() to: " + device);
 
         if (mState == STATE_CONNECTING) {
-            // If we are geting request to connect to the same device that we are
+            // If we are getting request to connect to the same device that we are
             //  already connecting to - do nothing
             if(mConnectThread.getDevice().getAddress().equals(device.getAddress())) {
                 Log.d(TAG, "connect() already connecting to: " + device);
@@ -94,7 +94,7 @@ public class BluetoothProvider {
 
         // Cancel any thread currently running a connection
         if (mConnectedThread != null) {
-            // If we are geting request to connect to the same device that we are
+            // If we are getting request to connect to the same device that we are
             //  already connected to - do nothing
             if(getConnectedDevice().getAddress().equals(device.getAddress())) {
                 Log.d(TAG, "connect() already connected to: " + device);
@@ -140,7 +140,7 @@ public class BluetoothProvider {
         mState = STATE_DISCONNECTED;
 
         // NOTE: uncomment to hide after disconnect
-        //sharedData.bfv.resetAllValues();
+        //sharedData.getBfv().resetAllValues();
         //sharedData.resetDeviceData();
 
         if(connectedDevice != null) {
@@ -354,39 +354,39 @@ public class BluetoothProvider {
                     line = mmInStream.readLine();
 
                     // Parse data
-                    sharedData.bfv.parseRawData(line);
+                    sharedData.getBfv().parseRawData(line);
 
                     // Update sharedData.rawData
                     sharedData.setRawData("In: " + line);
 
                     // Calling here because device doesn't send settings automatically when
                     // connected over bluetooth
-                    boolean hw = sharedData.bfv.isUpdatedHardwareVersion();
-                    boolean uv = sharedData.bfv.checkUpdatedValues();
+                    boolean hw = sharedData.getBfv().isUpdatedHardwareVersion();
+                    boolean uv = sharedData.getBfv().checkUpdatedValues();
                     if(hw && !(uv) && sendGetSettings) {
-                        sharedData.setDeviceHwVersion(sharedData.bfv.getHwVersion());
-                        write(sharedData.bfv.getAllCommands().get("getSettings").serializeCommand());
+                        sharedData.setDeviceHwVersion(sharedData.getBfv().getHwVersion());
+                        write(sharedData.getBfv().getAllCommands().get("getSettings").serializeCommand());
                         sendGetSettings = false;
                     }
 
                     // Update device HW version
-                    if(sharedData.bfv.isUpdatedHardwareVersion()) {
-                        sharedData.setDeviceHwVersion(sharedData.bfv.getHwVersion());
+                    if(sharedData.getBfv().isUpdatedHardwareVersion()) {
+                        sharedData.setDeviceHwVersion(sharedData.getBfv().getHwVersion());
                     }
 
                     // Update device battery level
-                    if(sharedData.bfv.isUpdatedBattery()) {
-                        sharedData.setDeviceBattery(sharedData.bfv.getBattery());
+                    if(sharedData.getBfv().isUpdatedBattery()) {
+                        sharedData.setDeviceBattery(sharedData.getBfv().getBattery());
                     }
 
                     // Update device temperature
-                    if(sharedData.bfv.isUpdatedTemperature()) {
-                        sharedData.setDeviceTemp(sharedData.bfv.getTemperature());
+                    if(sharedData.getBfv().isUpdatedTemperature()) {
+                        sharedData.setDeviceTemp(sharedData.getBfv().getTemperature());
                     }
 
                     // Update device altitude
-                    if(sharedData.bfv.isUpdatedAltitude()) {
-                        double altitude = sharedData.bfv.getAltitude();
+                    if(sharedData.getBfv().isUpdatedAltitude()) {
+                        double altitude = sharedData.getBfv().getAltitude();
                         sharedData.setDeviceAltitude(altitude);
 
                         double timeDelta;

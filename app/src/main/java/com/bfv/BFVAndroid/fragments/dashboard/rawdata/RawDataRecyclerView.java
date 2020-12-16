@@ -2,6 +2,7 @@ package com.bfv.BFVAndroid.fragments.dashboard.rawdata;
 
 import android.content.Context;
 import android.os.Handler;
+import android.os.Looper;
 import android.util.AttributeSet;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
@@ -21,26 +22,26 @@ public class RawDataRecyclerView extends RecyclerView implements View.OnLongClic
 
     public RawDataRecyclerView(@NonNull Context context) {
         super(context);
-        init(context, this);
+        init(context);
     }
 
     public RawDataRecyclerView(@NonNull Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
-        init(context, this);
+        init(context);
     }
 
     public RawDataRecyclerView(@NonNull Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
-        init(context, this);
+        init(context);
     }
 
 
-    private void init(Context context, View view) {
+    private void init(Context context) {
         mGestureDetector = new GestureDetector(context, new GestureDetector.SimpleOnGestureListener() {
 
-            final Handler handler = new Handler();
+            final Handler handler = new Handler(Looper.getMainLooper());
             final Runnable mLongPressed = () -> {if(mLongClickListener != null) {
-                mLongClickListener.onRawDataLongClick(view);}};
+                mLongClickListener.onRawDataLongClick();}};
 
             @Override
             public void onLongPress(MotionEvent e) {
@@ -79,6 +80,6 @@ public class RawDataRecyclerView extends RecyclerView implements View.OnLongClic
      * Parent activity/fragment will implement this interface to respond to click events
      */
     public interface LongClickListener {
-        void onRawDataLongClick(View view);
+        void onRawDataLongClick();
     }
 }

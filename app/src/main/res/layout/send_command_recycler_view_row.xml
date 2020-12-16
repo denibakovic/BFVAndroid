@@ -20,7 +20,6 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="8"
-            android:text="Name"
             android:textColor="#000000"
             android:textSize="20sp"
             android:textStyle="bold" />
@@ -31,6 +30,5 @@
         android:id="@+id/commandDescription"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Description"
         android:textAppearance="?android:attr/textAppearanceMedium" />
 </LinearLayout>

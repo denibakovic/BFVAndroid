@@ -6,7 +6,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
+
 import java.util.TreeMap;
 
 import BFVlib.Command;
@@ -27,8 +29,9 @@ public class SendCommandRecyclerAdapter extends RecyclerView.Adapter<SendCommand
 
 
     // inflates the row layout from xml when needed
+    @NonNull
     @Override
-    public SendCommandRecyclerAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public SendCommandRecyclerAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = mInflater.inflate(R.layout.send_command_recycler_view_row, parent, false);
 
         return new SendCommandRecyclerAdapter.ViewHolder(view);
@@ -55,8 +58,8 @@ public class SendCommandRecyclerAdapter extends RecyclerView.Adapter<SendCommand
 
     // stores and recycles views as they are scrolled off screen
     public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
-        TextView commandName;
-        TextView commandDescription;
+        private final TextView commandName;
+        private final TextView commandDescription;
 
         ViewHolder(View itemView) {
             super(itemView);
@@ -67,7 +70,7 @@ public class SendCommandRecyclerAdapter extends RecyclerView.Adapter<SendCommand
 
         @Override
         public void onClick(View view) {
-            if (mClickListener != null) mClickListener.onSendCommandItemClick(view, getAdapterPosition());
+            if (mClickListener != null) mClickListener.onSendCommandItemClick(getAdapterPosition());
         }
     }
 
@@ -85,6 +88,6 @@ public class SendCommandRecyclerAdapter extends RecyclerView.Adapter<SendCommand
      * Parent activity/fragment will implement this interface to respond to click events
      */
     public interface ItemClickListener {
-        void onSendCommandItemClick(View view, int position);
+        void onSendCommandItemClick(int position);
     }
 }

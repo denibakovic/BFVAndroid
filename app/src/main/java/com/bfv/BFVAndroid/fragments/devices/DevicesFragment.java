@@ -19,9 +19,9 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.bfv.BFVAndroid.bluetooth.BluetoothController;
 import com.bfv.BFVAndroid.R;
 import com.bfv.BFVAndroid.SharedDataViewModel;
+import com.bfv.BFVAndroid.bluetooth.BluetoothController;
 import com.bfv.BFVAndroid.bluetooth.BluetoothProvider;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
@@ -132,11 +132,11 @@ public class DevicesFragment extends Fragment implements DevicesRecyclerAdapter.
                 BluetoothDevice bluetoothDevice = bluetoothController.getConnectedDevice();
                 if (pairedDevices.contains(bluetoothDevice)) {
                     devicesRecyclerView.post(changeDeviceItemBackgroundColor(bluetoothDevice, true));
-                    stateTextView.setText("Connected to " + bluetoothDevice.getName());
+                    stateTextView.setText(getString(R.string.connected_to, bluetoothDevice.getName()));
                 }
             }
             else {
-                stateTextView.setText("Disconnected!");
+                stateTextView.setText(getString(R.string.disconnected));
             }
         }
     }
@@ -171,7 +171,7 @@ public class DevicesFragment extends Fragment implements DevicesRecyclerAdapter.
      * Click listener for item(device) in paired bluetooth devices list
      */
     @Override
-    public void onItemClick(View view, int position) {
+    public void onItemClick(int position) {
         BluetoothDevice connectedDevice = bluetoothController.getConnectedDevice();
         BluetoothDevice deviceToConnectTo = devicesRecyclerAdapter.getItem(position);
 
@@ -202,26 +202,26 @@ public class DevicesFragment extends Fragment implements DevicesRecyclerAdapter.
         public void onChanged(@Nullable Integer i) {
             switch (i) {
                 case BluetoothProvider.STATE_BLUETOOTH_DISABLED:
-                    stateTextView.setText("Bluetooth disabled!");
+                    stateTextView.setText(R.string.bluetooth_off);
                     break;
                 case BluetoothProvider.STATE_NO_BLUETOOTH_ADAPTER:
-                    stateTextView.setText("Phone doesn't have bluetooth!");
+                    stateTextView.setText(R.string.no_bluetooth);
                     break;
                 case BluetoothProvider.STATE_DISCONNECTED:
-                    stateTextView.setText("Disconnected!");
+                    stateTextView.setText(R.string.disconnected);
                     if(bluetoothController.getPreviousConnectedDevice() != null) {
                         devicesRecyclerView.post(changeDeviceItemBackgroundColor(bluetoothController.getPreviousConnectedDevice(), false));
                     }
                     break;
                 case BluetoothProvider.STATE_CONNECTING:
-                    stateTextView.setText("Connecting ..");
+                    stateTextView.setText(R.string.connecting);
                     break;
                 case BluetoothProvider.STATE_CONNECTED:
-                    stateTextView.setText("Connected to " + bluetoothController.getConnectedDevice().getName());
+                    stateTextView.setText(getString(R.string.connected_to, bluetoothController.getConnectedDevice().getName()));
                     devicesRecyclerView.post(changeDeviceItemBackgroundColor(bluetoothController.getConnectedDevice(), true));
                     break;
                 case BluetoothProvider.STATE_NO_PAIRED_DEVICES:
-                    stateTextView.setText("No paired devices!");
+                    stateTextView.setText(R.string.no_paired_devices);
                     break;
             }
         }
