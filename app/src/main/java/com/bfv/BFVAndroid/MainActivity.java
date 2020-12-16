@@ -9,6 +9,7 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
@@ -83,6 +84,9 @@ public class MainActivity extends AppCompatActivity implements BluetoothControll
         tabLayout.getTabAt(TAB_PARAMETERS).setIcon(R.drawable.ic_parameters_24);
 
         viewPager.setCurrentItem(TAB_DASHBOARD);
+        ActionBar actionBar = getSupportActionBar();
+        actionBar.setDisplayShowHomeEnabled(true);
+        actionBar.setIcon(R.drawable.ic_launcher_foreground);
     }
 
 

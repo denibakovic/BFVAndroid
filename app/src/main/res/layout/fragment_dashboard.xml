@@ -25,7 +25,7 @@
         android:layout_marginLeft="16dp"
         android:layout_marginTop="8dp"
         android:layout_marginRight="16dp"
-        android:layout_weight="20" />
+        android:layout_weight="15" />
 
     <androidx.fragment.app.FragmentContainerView
         android:id="@+id/rawDataFragmentContainerView"
@@ -36,6 +36,6 @@
         android:layout_marginTop="8dp"
         android:layout_marginRight="16dp"
         android:layout_marginBottom="8dp"
-        android:layout_weight="60" />
+        android:layout_weight="65" />
 
 </LinearLayout>

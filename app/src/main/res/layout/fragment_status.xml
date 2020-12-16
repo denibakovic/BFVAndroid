@@ -2,7 +2,6 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context="com.bfv.BFVAndroid.fragments.dashboard.status.StatusFragment">
 
     <TableRow
@@ -17,7 +16,7 @@
             android:layout_height="wrap_content"
             android:labelFor="@id/hwVersionText"
             android:text="@string/hwversion"
-            app:autoSizeTextType="uniform"
+            android:textSize="18sp"
             android:textStyle="bold" />
 
         <TextView
@@ -25,7 +24,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textColor="@color/colorPrimary"
-            app:autoSizeTextType="uniform"
+            android:textSize="18sp"
             android:textStyle="bold" />
 
     </TableRow>
@@ -41,7 +40,7 @@
             android:layout_height="wrap_content"
             android:labelFor="@id/batteryText"
             android:text="@string/battery"
-            app:autoSizeTextType="uniform"
+            android:textSize="18sp"
             android:textStyle="bold" />
 
         <TextView
@@ -49,7 +48,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textColor="@color/colorPrimary"
-            app:autoSizeTextType="uniform"
+            android:textSize="18sp"
             android:textStyle="bold" />
     </TableRow>
 
@@ -64,7 +63,7 @@
             android:layout_height="wrap_content"
             android:labelFor="@id/temperatureText"
             android:text="@string/temperature"
-            app:autoSizeTextType="uniform"
+            android:textSize="18sp"
             android:textStyle="bold" />
 
         <TextView
@@ -72,7 +71,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textColor="@color/colorPrimary"
-            app:autoSizeTextType="uniform"
+            android:textSize="18sp"
             android:textStyle="bold" />
     </TableRow>
 
@@ -87,7 +86,7 @@
             android:layout_height="wrap_content"
             android:labelFor="@id/altitudeText"
             android:text="@string/altitude"
-            app:autoSizeTextType="uniform"
+            android:textSize="18sp"
             android:textStyle="bold" />
 
         <TextView
@@ -95,7 +94,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textColor="@color/colorPrimary"
-            app:autoSizeTextType="uniform"
+            android:textSize="18sp"
             android:textStyle="bold" />
     </TableRow>
 
