@@ -6,7 +6,6 @@
     tools:context="com.bfv.BFVAndroid.fragments.dashboard.rawdata.RawDataFragment">
 
     <TextView
-        android:id="@+id/textView5"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="@string/raw_data_stream"
@@ -17,7 +16,6 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
-        android:longClickable="true"
-        tools:listitem="@layout/raw_data_recycler_view_row" />
+        android:longClickable="true" />
 
 </LinearLayout>

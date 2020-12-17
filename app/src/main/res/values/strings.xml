@@ -11,7 +11,7 @@
     <string name="battery_value">%1$s%%(%2$sV)</string>
     <string name="temperature">Temperature:</string>
     <string name="temperature_value">%1$s°C</string>
-    <string name="vario">%1$sm/s</string>
+    <string name="vario"><b>%1$sm/s</b></string>
 
     <string name="about_app">
         \n<big><b>BlueFlyVario Android app</b></big>
@@ -35,5 +35,6 @@
     <string name="disconnected">Disconnected!</string>
     <string name="no_bluetooth">Phone doesn\'t have bluetooth!</string>
     <string name="bluetooth_off">Bluetooth disabled!</string>
+    <string name="vario_title"><u>Vario:</u></string>
 
 </resources>

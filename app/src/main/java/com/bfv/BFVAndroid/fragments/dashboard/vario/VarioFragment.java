@@ -7,12 +7,14 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import androidx.annotation.Nullable;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.bfv.BFVAndroid.R;
 import com.bfv.BFVAndroid.SharedDataViewModel;
+import com.bfv.BFVAndroid.bluetooth.BluetoothProvider;
 
 public class VarioFragment extends Fragment {
 
@@ -35,6 +37,7 @@ public class VarioFragment extends Fragment {
 
         // Shared data observers
         sharedData.getVario().observe(getViewLifecycleOwner(), varioObserver);
+        sharedData.getConnectionState().observe(getViewLifecycleOwner(), connectionStateObserver);
 
         // Inflate the layout for this fragment
         return rootView;
@@ -51,6 +54,21 @@ public class VarioFragment extends Fragment {
             if(currentTime - lastUpdateTime > 400) {
                 varioText.setText(getString(R.string.vario, String.format("%.2f", value)));
                 lastUpdateTime= currentTime;
+            }
+        }
+    };
+
+
+    /**
+     * Observer for sharedData.connectionState
+     */
+    private final Observer<Integer> connectionStateObserver = new Observer<Integer>() {
+        @Override
+        public void onChanged(@Nullable Integer i) {
+            if (i == BluetoothProvider.STATE_CONNECTED) {
+                varioText.setTextColor(ContextCompat.getColor(getContext(), R.color.colorPrimary));
+            } else {
+                varioText.setTextColor(ContextCompat.getColor(getContext(), R.color.colorGrey));
             }
         }
     };

@@ -10,6 +10,7 @@
     <androidx.fragment.app.FragmentContainerView
         android:id="@+id/statusFragmentContainerView"
         android:name="com.bfv.BFVAndroid.fragments.dashboard.status.StatusFragment"
+        tools:layout="@layout/fragment_status"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_marginLeft="16dp"
@@ -20,6 +21,7 @@
     <androidx.fragment.app.FragmentContainerView
         android:id="@+id/varioFragmentContainerView"
         android:name="com.bfv.BFVAndroid.fragments.dashboard.vario.VarioFragment"
+        tools:layout="@layout/fragment_vario"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_marginLeft="16dp"
@@ -30,6 +32,7 @@
     <androidx.fragment.app.FragmentContainerView
         android:id="@+id/rawDataFragmentContainerView"
         android:name="com.bfv.BFVAndroid.fragments.dashboard.rawdata.RawDataFragment"
+        tools:layout="@layout/fragment_raw_data"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_marginLeft="16dp"

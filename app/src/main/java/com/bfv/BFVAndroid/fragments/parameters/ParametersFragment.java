@@ -19,8 +19,10 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -63,6 +65,11 @@ public class ParametersFragment extends Fragment implements ParametersRecyclerAd
         parametersRecyclerAdapter = new ParametersRecyclerAdapter(getContext(), parameters, bluetoothController);
         parametersRecyclerAdapter.setClickListener(this);
         parametersRecyclerView.setAdapter(parametersRecyclerAdapter);
+
+        DividerItemDecoration itemDecorator = new DividerItemDecoration(getContext(), DividerItemDecoration.VERTICAL);
+        itemDecorator.setDrawable(ContextCompat.getDrawable(getContext(), R.drawable.divider));
+
+        parametersRecyclerView.addItemDecoration(itemDecorator);
 
         /*
          * HACK: this actually works for updating values, but is should probably be implemented

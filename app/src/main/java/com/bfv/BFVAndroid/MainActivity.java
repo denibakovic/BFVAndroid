@@ -12,7 +12,9 @@ import android.widget.Toast;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager.widget.ViewPager;
@@ -83,6 +85,7 @@ public class MainActivity extends AppCompatActivity implements BluetoothControll
         tabLayout.getTabAt(TAB_PARAMETERS).setIcon(R.drawable.ic_parameters_24);
 
         viewPager.setCurrentItem(TAB_DASHBOARD);
+
         ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) {
             actionBar.setDisplayShowHomeEnabled(true);
@@ -254,6 +257,10 @@ public class MainActivity extends AppCompatActivity implements BluetoothControll
 
         RecyclerView commandsRecyclerView = convertView.findViewById(R.id.sendCommandRecyclerView);
         commandsRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+
+        DividerItemDecoration itemDecorator = new DividerItemDecoration(this, DividerItemDecoration.VERTICAL);
+        itemDecorator.setDrawable(ContextCompat.getDrawable(this, R.drawable.divider));
+        commandsRecyclerView.addItemDecoration(itemDecorator);
 
         commands = new TreeMap<>(sharedData.getBfv().getAllCommands());
         SendCommandRecyclerAdapter adapter = new SendCommandRecyclerAdapter(this, commands);

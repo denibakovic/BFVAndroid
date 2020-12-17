@@ -6,6 +6,7 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -45,6 +46,10 @@ public class DevicesRecyclerAdapter extends RecyclerView.Adapter<DevicesRecycler
         BluetoothDevice device = mDevices.get(position);
         holder.deviceName.setText(device.getName());
         holder.deviceAddr.setText(device.getAddress());
+
+        if(device.getName().contains("BlueFly") || device.getName().contains("BFV")) {
+            holder.deviceIcon.setVisibility(View.VISIBLE);
+        }
     }
 
     // total number of rows
@@ -58,11 +63,13 @@ public class DevicesRecyclerAdapter extends RecyclerView.Adapter<DevicesRecycler
     public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         private final TextView deviceName;
         private final TextView deviceAddr;
+        private final ImageView deviceIcon;
 
         ViewHolder(View itemView) {
             super(itemView);
             deviceName = itemView.findViewById(R.id.device_name);
             deviceAddr = itemView.findViewById(R.id.device_addr);
+            deviceIcon = itemView.findViewById(R.id.device_icon);
             itemView.setOnClickListener(this);
         }
 

@@ -53,10 +53,10 @@ public class StatusFragment extends Fragment {
         textViewTemperature = rootView.findViewById(R.id.temperatureText);
 
         if(bluetoothController.getState() == BluetoothProvider.STATE_CONNECTED) {
-            setTextBackgroundColor(R.color.colorPrimary);
+            setTextColor(R.color.colorPrimary);
         }
         else {
-            setTextBackgroundColor(R.color.colorGrey);
+            setTextColor(R.color.colorGrey);
         }
 
         // Inflate the layout for this fragment
@@ -64,7 +64,7 @@ public class StatusFragment extends Fragment {
     }
 
 
-    private void setTextBackgroundColor(int p) {
+    private void setTextColor(int p) {
         textViewBattery.setTextColor(ContextCompat.getColor(getContext(), p));
         textViewAltitude.setTextColor(ContextCompat.getColor(getContext(), p));
         textViewHwversion.setTextColor(ContextCompat.getColor(getContext(), p));
@@ -88,9 +88,9 @@ public class StatusFragment extends Fragment {
         @Override
         public void onChanged(@Nullable Integer i) {
             if (i == BluetoothProvider.STATE_CONNECTED) {
-                rootView.post(() -> setTextBackgroundColor(R.color.colorPrimary));
+                rootView.post(() -> setTextColor(R.color.colorPrimary));
             } else {
-                rootView.post(() -> setTextBackgroundColor(R.color.colorGrey));
+                rootView.post(() -> setTextColor(R.color.colorGrey));
             }
         }
     };

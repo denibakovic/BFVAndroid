@@ -4,11 +4,19 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    tools:context="com.bfv.BFVAndroid.fragments.dashboard.vario.VarioFragment">
+    tools:context="com.bfv.BFVAndroid.fragments.dashboard.vario.VarioFragment"
+    android:orientation="vertical">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/vario_title" />
 
     <TextView
         android:id="@+id/varioText"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:textColor="@color/colorPrimary"
+        tools:text="0.0m/s"
         app:autoSizeTextType="uniform" />
 </LinearLayout>
