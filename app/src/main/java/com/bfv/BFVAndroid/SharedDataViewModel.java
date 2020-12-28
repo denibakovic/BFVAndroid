@@ -8,7 +8,7 @@ import com.bfv.BFVAndroid.bluetooth.BluetoothProvider;
 
 import java.util.ArrayList;
 
-import BFVlib.BFV;
+import BFVLib.BFV;
 
 public class SharedDataViewModel extends ViewModel{
     private final MutableLiveData<Integer> connectionState;

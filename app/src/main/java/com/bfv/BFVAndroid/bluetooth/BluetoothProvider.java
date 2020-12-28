@@ -354,7 +354,7 @@ public class BluetoothProvider {
                     line = mmInStream.readLine();
 
                     // Parse data
-                    sharedData.getBfv().parseRawData(line);
+                    sharedData.getBfv().parseLine(line);
 
                     // Update sharedData.rawData
                     sharedData.setRawData("In: " + line);

@@ -36,8 +36,8 @@ import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import BFVlib.BFV;
-import BFVlib.Command;
+import BFVLib.BFV;
+import BFVLib.Command;
 
 
 public class ParametersFragment extends Fragment implements ParametersRecyclerAdapter.ItemClickListener {

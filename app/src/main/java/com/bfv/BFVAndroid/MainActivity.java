@@ -29,7 +29,7 @@ import com.google.android.material.tabs.TabLayout;
 
 import java.util.TreeMap;
 
-import BFVlib.Command;
+import BFVLib.Command;
 
 
 /**

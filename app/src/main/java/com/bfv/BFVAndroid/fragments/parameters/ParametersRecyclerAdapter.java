@@ -18,7 +18,7 @@ import com.bfv.BFVAndroid.bluetooth.BluetoothProvider;
 
 import java.util.Map;
 
-import BFVlib.Command;
+import BFVLib.Command;
 
 
 /**

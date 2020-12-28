@@ -11,7 +11,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.TreeMap;
 
-import BFVlib.Command;
+import BFVLib.Command;
 
 
 public class SendCommandRecyclerAdapter extends RecyclerView.Adapter<SendCommandRecyclerAdapter.ViewHolder> {
